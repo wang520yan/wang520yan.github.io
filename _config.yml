@@ -1,0 +1,165 @@
+# Site settings
+title: Yan Blog
+SEOTitle: Yan Blog
+header-img: img/index_bg.jpg
+logo: img/logo.png
+email: yan@gmail.com
+description: "代码编织梦想，程序创造未来"
+keyword: "彦，程序员"
+url: "https://wang520yan.github.io/"              # your host, for absolute URL
+baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
+
+
+# links1:
+#   - name: 所有
+#     url: /
+#     type: recent
+#     extenal: false
+#   - name: 随笔
+#     url: /title
+#     type: title
+#     extenal: false
+#   - name: 学习
+#     url: /study
+#     type: study
+#     extenal: false
+#
+# blog_1: recent
+# blog_2: title
+# blog_3: study
+
+
+
+
+# Publish posts or collection documents with a future date.
+future: true
+
+# SNS settings
+RSS: false
+weibo_username:     wang520yan
+zhihu_username:     wang521yan
+github_username:    wang520yan
+twitter_username:   wang520yan
+facebook_username:  wang520yan
+linkedin_username:  wang520yan
+
+
+
+# Build settings
+# from 2016, 'pygments' is unsupported on GitHub Pages. Use 'rouge' for highlighting instead.
+highlighter: rouge
+permalink: pretty
+paginate: 10
+paginate_path: "page:num"
+exclude: ["less","node_modules","Gruntfile.js","package.json","README.md","README.zh.md"]
+anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
+# If you have timezone issue (e.g. #68) in China, uncomment to use this:
+#timezone: CN
+
+
+
+# Gems
+# from PR#40, to support local preview for Jekyll 3.0
+# make sure you have this gem installed
+# `$ gem install jekyll-paginate`
+plugins: [jekyll-paginate]
+
+
+
+# Markdown settings
+# replace redcarpet to kramdown,
+# although redcarpet can auto highlight code, the lack of header-id make the catalog impossible, so I switch to kramdown
+# document: http://jekyllrb.com/docs/configuration/#kramdown
+markdown: kramdown
+kramdown:
+  input: GFM                            # use Github Flavored Markdown !important
+  syntax_highlighter_opts:
+    span:
+      line_numbers: false
+    block:
+      line_numbers: true
+      start_line: 1
+
+
+
+# Disqus settings
+disqus_username: yan
+
+# Netease settings
+netease_comment: false
+
+
+
+# Analytics settings
+# Baidu Analytics
+ba_track_id: 5cd3746f37e5658b23190f6f61f05fc0
+
+# Google Analytics
+# ga_track_id: 'UA-49627206-1'            # Format: UA-xxxxxx-xx
+# ga_domain: huangxuan.me
+
+
+
+# Sidebar settings
+sidebar: true                           # whether or not using Sidebar.
+sidebar-about-description: "And if you gaze for long into an abyss, the abyss gazes also into you.凝视深渊过久,深渊将回以凝视。"
+sidebar-avatar: /img/avatar-yan1.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+
+
+
+# Featured Tags
+featured-tags: true                     # whether or not using Feature-Tags
+featured-condition-size: 1              # A tag will be featured if the size of it is more than this condition value
+
+
+
+# Progressive Web Apps
+chrome-tab-theme-color: "#000000"
+service-worker: true
+
+
+
+# MathJax rendering for layout:page (e.g. post preview)
+page-mathjax: false
+
+
+
+# Friends
+friends: [
+    {
+        title: "博客园-yan",
+        href: "http://www.cnblogs.com/yanwanglol/"
+    },
+    {
+        title: "知乎-yan",
+        href: "https://www.zhihu.com/people/wang520yan/activities"
+    },
+    # {
+    #     title: "前端外刊评论",
+    #     href: "http://qianduan.guru/"
+    # },{
+    #     title: "天镶的博客",
+    #     href: "http://lingyu.wang/"
+    # },{
+    #     title: "Luke 的自留地",
+    #     href: "http://hmqk1995.github.io"
+    # },{
+    #     title: "Ebn's Blog",
+    #     href: "http://ebnbin.com/"
+    # },{
+    #     title: "SmdCn's Blog",
+    #     href: "http://blog.smdcn.net"
+    # },{
+    #     title: "David's Game",
+    #     href: "https://www.ruoyaowu.com/"
+    # },{
+    #     title: "DHong Say",
+    #     href: "http://dhong.co"
+    # },{
+    #     title: "尹峰以为",
+    #     href: "http://ingf.github.io/"
+    # },{
+    #     title: "解旻的博客",
+    #     href: "http://xieminis.me/"
+    # }
+]
