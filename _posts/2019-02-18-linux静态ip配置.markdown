@@ -1,0 +1,29 @@
+---
+layout:     post
+title:      "linux静态ip配置"
+subtitle:   "在linux服务器上配置静态ip"
+date:       2019-02-18 09:00:00
+author:     "yan"
+header-img: "img/post-bg-2019-02.jpg"
+top-img: "/img/ips.jpg"
+catalog: true
+tags:
+    - 学习
+    - linux
+---
+
+1. 使用命令`ifconfig`查看网卡名字，默认服务器网卡名为`ifcfg-enth0`。
+2. 在/etc/sysconfig/network-scripts目录下，找到与网卡名字相同的文件。
+3. 修改该配置文件，修改内容如下：
+```
+IPADDR = 192.168.177.11
+NETMASK = 255.255.255.0
+GATEWAY = 192.168.177.1
+BOOTPROTO = static
+ONBOOT = yes
+```
+4. 重新启动网卡:
+`service network.service restart`
+或者 `systemctl network restart`
+5. 测试网络通不通：
+ping www.baidu.com

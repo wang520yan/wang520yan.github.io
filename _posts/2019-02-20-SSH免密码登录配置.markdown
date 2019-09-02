@@ -1,0 +1,28 @@
+---
+layout:     post
+title:      "SSH免密码登录配置"
+subtitle:   ""
+date:       2019-02-20 17:20:00
+author:     "yan"
+header-img: "img/bg_index.jpg"
+top-img: "/img/ssh.jpg"
+catalog: true
+tags:
+    - 学习
+    - centos7
+---
+#### SSH介绍
+SSH是建立在应用层和传输层基础上的安全协议，其目的是为了远程登录会话和其他网络服务提供安全性的保障。
+SSH密钥可实现无密码登录
+#### SSH无密码配置
+1. 检查是否生成过SSH密钥
+切换到.ssh目录，`cd ~/.ssh`
+如果存在则表示已生成ssh密钥
+2. 使用ssh-keygen生成ssh密钥
+`ssh-heygen -t rsa | dsa`
+生成ssh密钥之后，可以在～/.ssh目录下查看相关文件，一般ssh密钥包含id_rsa和id_rsa.pub两个文件，分别表示生成的密钥和公钥。
+3. 将.pub文件复制到另一台机器的.ssh目录下，并执行下面命令：
+`cat id_rsa.pub >> ~/.ssh/authorized_keys`
+4. 此时，私钥服务器可无密码登录公钥服务器，直接使用`ssh 192.168.177.11`就可远程登录该服务器。
+#### 双向免密码登录配置
+在A、B两台服务器都执行`ssh-heygen -t rsa`命令，并将生成的公钥文件都发到对方的～/.ssh目录下，接着执行`cat id_rsa.pub >> ~/.ssh/authorized_keys`即可实现双向免密码登录。

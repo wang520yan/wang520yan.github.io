@@ -1,0 +1,63 @@
+---
+layout:     post
+title:      "docker容器可视化管理"
+subtitle:   ""
+date:       2019-02-22 09:30:00
+author:     "yan"
+header-img: "img/post-bg-2019-021.jpg"
+top-img: "/img/gui.jpg"
+catalog: true
+tags:
+    - 学习
+    - docker
+---
+#### docker UI
+1. 优点：  
+&emsp;&emsp;支持容器批量操作  
+&emsp;&emsp;支持镜像管理
+2. 缺点：  
+&emsp;&emsp;不支持多主机
+3. 部署：  
+`docker pull uifd/ui-for-docker`
+`docker run -it -d --name docker-web -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock docker.io/uifd/ui-for-docker`
+`docker ps`
+4. 访问：  
+`192.168.177.11:9000`
+
+#### shipyard
+1. 介绍
+shipyard是在docker swarm实现对容器、镜像、集群、仓库、节点进行管理的web系统。  
+shipyard包含以下容器及启动顺序：  
+（1）RethinkDB  作为数据库保存用户等信息  
+（2）Discovery  一个外部的密码值存储容器  
+（3）shipyard_certs  证书管理容器，实现证书验证功能  
+（4）proxy  使用TLS转发请求从TCP到docker监听的socket  
+（5）swarm manager  swarm管理器  
+（6）swarm agent swarm代理，运行在每个节点上  
+（7）controller  shipyard控制器，Remote API和web的实现。  
+
+2. 部署  
+脚本：shipyard-deploy
+```
+chmod 755 shipyard-deploy
+sh shipyard-deploy   此时会创建以上七个容器，在浏览器访问8080端口即可看到shipyard登陆界面，登录用户名是admin，密码是shipyard
+修改web访问端口：
+cat shipyard-deploy | grep 8080
+sed -i 's|8080|80|g' shipyard-deploy
+重新部署
+sh shipyard-deploy
+删除shipyard环境
+cat shipyard-delpoy | ACTION = remove bash
+添加其他节点主机，在节点主机上操作
+cat shipyard-deploy | ACTION = node DISCOVERY = etcd://192.168.177.11:4001 bash
+删除节点机
+cat shipyard-deploy | ACTION = remove bash -s
+```
+
+#### portainer
+1. 下载镜像  
+`docker pull portainer/portainer`  
+2. 单机运行  
+`docker run -d -p 9000:9000 --restart = always -v /var/run/docker.sock:/var/run/docker.sock --name portainer-test portainer/portainer`  
+3. 集群运行  
+`docker run -d -p 9000:9000 --restart = always --name portainer-test portainer/portainer`  

@@ -1,0 +1,23 @@
+---
+layout:     post
+title:      "docker容器开机自启"
+subtitle:   ""
+date:       2019-02-17 15:00:00
+author:     "yan"
+header-img: "img/post-bg-2019-021.jpg"
+top-img: "/img/start.jpg"
+catalog: true
+tags:
+    - 学习
+    - docker
+---
+## docker服务开机自启
+`chkconfig docker on`
+## docker容器开机自启
+vi /etc/rc.local  
+在文件最后加上需要启动的容器：  
+`docker start test`  
+在centos7中要在前面加上 **systemctl start docker**
+## 设置执行权限
+`chmod +x /etc/rc.local`  
+`chmod +x /etc/rc.d/rc.local`

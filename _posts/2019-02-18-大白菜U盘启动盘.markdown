@@ -1,0 +1,32 @@
+---
+layout:     post
+title:      "大白菜U盘启动盘"
+subtitle:   ""
+date:       2019-02-18 18:00:00
+author:     "yan"
+header-img: "img/post-bg-2019-02.jpg"
+top-img: "/img/s1.jpg"
+catalog: true
+tags:
+    - 学习
+    - 系统
+---
+#### 制作启动盘
+1. 下载大白菜装机版（http://www.winbaicai.com/）
+2. 选择‘默认模式’， 模式选择"USB-HDD",格式选择"NTFS"。
+3. “一键制作成USB启动盘”
+4. 弹框选择”是”，格式化U盘。
+5. 模拟运行。  
+**也可以使用光盘制作光盘启动盘，效果与u盘启动盘一样**
+
+#### 使用启动盘
+1. 重启电脑按键按下后按下快捷键，进入BIOS页面，进入优先级启动选项设置界面。
+2. boot > Boot Device Priority 设置启动顺序
+3. UEFI/legacy Boot Priority > legacy first
+4. f10保存后退出。
+5. 进入启动盘系统后，选择第一个：启动 win10 * 64 PE（2GB内存以上）
+
+#### 启动盘功能
+**安装系统**  
+**更改系统分区**  
+**更改电脑密码**  

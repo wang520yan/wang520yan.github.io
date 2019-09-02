@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Yan Blog</title>
+    <description>代码编织梦想，程序创造未来</description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Mon, 02 Sep 2019 22:59:46 +0800</pubDate>
+    <lastBuildDate>Mon, 02 Sep 2019 22:59:46 +0800</lastBuildDate>
+    <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>docker存储管理</title>
+        <description>&lt;h4 id=&quot;docker-volume形态&quot;&gt;Docker volume形态&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;volume介绍&lt;br /&gt;
+  Docker 采用 AFUS 分层文件系统时，文件系统的改动都是发生在最上面的容器层，在容器的生命周期内，它是持续的，包括容器在被停止后。但是，当容器被删除后，该数据层也随之被删除了。因此，Docker 采用 volume （卷）的形式来向容器提供持久化存储.Docker volume 有如下几种形态：&lt;br /&gt;
+1.1 默认，即无Docker volume&lt;br /&gt;
+  默认情况下，容器不使用任何 volume，此时，容器的数据被保存在容器之内，它只在容器的生命周期内存在，会随着容器的被删除而被删除。当然，也可以使用 docker commit 命令将它持久化为一个新的镜像。&lt;br /&gt;
+1.2 Data volume （数据卷） &lt;br /&gt;
+  一个 data volume 是容器中绕过 Union 文件系统的一个特定的目录。它被设计用来保存数据，而不管容器的生命周期。因此，当你删除一个容器时，Docker 肯定不会自动地删除一个volume。&lt;br /&gt;
+（1）使用 “-v 容器内目录” 形式&lt;br /&gt;
+  &lt;code class=&quot;highlighter-rouge&quot;&gt;docker run -d -P --name web -v /webapp training/webapp python app.py&lt;/code&gt;&lt;br /&gt;
+使用 docker inspect 命令可以看出，Docker 将本地一个 &lt;code class=&quot;highlighter-rouge&quot;&gt;_data&lt;/code&gt; 目录 mount 为容器内的 webapp 目录了：
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&quot;Mounts&quot;: [
+         {
+             &quot;Name&quot;: &quot;f143b7f379fb6d012a08656fc950bf6df4bf5a5b90c72f310644aa997620122b&quot;,
+             &quot;Source&quot;: &quot;/var/lib/docker/volumes/f143b7f379fb6d012a08656fc950bf6df4bf5a5b90c72f310644aa997620122b/_data&quot;,
+             &quot;Destination&quot;: &quot;/webapp&quot;,
+             &quot;Driver&quot;: &quot;local&quot;,
+             &quot;Mode&quot;: &quot;&quot;,
+             &quot;RW&quot;: true,
+             &quot;Propagation&quot;: &quot;&quot;
+         }
+     ],  
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;p&gt;其实，在 web 容器被删除后，&lt;code class=&quot;highlighter-rouge&quot;&gt;/var/lib/docker/volumes/f143b7f379fb6d012a08656fc950bf6df4bf5a5b90c72f310644aa997620122b/_data&lt;/code&gt;目录及其中的内容都还会保留下来，但是，新启动的容器无法再使用这个目录，也就是说，已有的数据不能自动地被重复使用了。&lt;br /&gt;
+（2）使用 -v 来挂载一个主机上的目录到容器的目录&lt;br /&gt;
+  &lt;code class=&quot;highlighter-rouge&quot;&gt;docker run -d -P --name web2 -v /src/webapp:/webapp training/webapp python app.py&lt;/code&gt;&lt;br /&gt;
+主机上的目录可以是一个本地目录，也可以在一个 NFS share 内，或者在一个已经格式化好了的块设备上。其实这种形式和第一种没有本质的区别，容器内对 /webapp 的操作都会反映到主机上的 /src/webapp 目录内。只是，重新启动容器时，可以再次使用同样的方式来将 /src/webapp 目录挂载到新的容器内，这样就可以实现数据持久化的目标。&lt;br /&gt;
+（3）使用 -v 来挂载主机上的一个文件到容器内的一个文件&lt;br /&gt;
+  &lt;code class=&quot;highlighter-rouge&quot;&gt;docker run --rm -it -v ~/.bash_history:/root/.bash_history ubuntu /bin/bash&lt;/code&gt;&lt;br /&gt;
+1.3 data container（数据卷容器）&lt;br /&gt;
+  如果要在容器之间共享数据，最好是使用 data container。这种 container 中不会跑应用，而只是挂载一个卷。&lt;br /&gt;
+创建一个 data container：&lt;br /&gt;
+  &lt;code class=&quot;highlighter-rouge&quot;&gt;docker create -v /dbdata --name dbstore training/webapp  /bin/true&lt;/code&gt;&lt;br /&gt;
+启动一个 app container：&lt;br /&gt;
+  &lt;code class=&quot;highlighter-rouge&quot;&gt;docker run -d -P --name web3 --volumes-from dbstore training/webapp python app.py&lt;/code&gt;&lt;br /&gt;
+其实，对 web3 这个容器来说，volume 的本质没变，它只是将 dbstore 容器的 /dbdata 目录映射的主机上的目录映射到自身的 /dbdata 目录。&lt;/p&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;&quot;Mounts&quot;: [
+         {
+             &quot;Name&quot;: &quot;5341c03f3b94f13f4c86d88ccb0f3b63487adf30dea7ae6b2d06e947235e7330&quot;,
+             &quot;Source&quot;: &quot;/var/lib/docker/volumes/5341c03f3b94f13f4c86d88ccb0f3b63487adf30dea7ae6b2d06e947235e7330/_data&quot;,
+             &quot;Destination&quot;: &quot;/dbdata&quot;,
+             &quot;Driver&quot;: &quot;local&quot;,
+             &quot;Mode&quot;: &quot;&quot;,
+             &quot;RW&quot;: true,
+             &quot;Propagation&quot;: &quot;&quot;
+         }
+     ],
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Tue, 19 Mar 2019 05:30:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/03/19/docker%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/03/19/docker%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86/</guid>
+        
+        <category>学习</category>
+        
+        <category>docker</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>docker容器可视化管理</title>
+        <description>&lt;h4 id=&quot;docker-ui&quot;&gt;docker UI&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;优点：&lt;br /&gt;
+  支持容器批量操作&lt;br /&gt;
+  支持镜像管理&lt;/li&gt;
+  &lt;li&gt;缺点：&lt;br /&gt;
+  不支持多主机&lt;/li&gt;
+  &lt;li&gt;部署：&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker pull uifd/ui-for-docker&lt;/code&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker run -it -d --name docker-web -p 9000:9000 -v /var/run/docker.sock:/var/run/docker.sock docker.io/uifd/ui-for-docker&lt;/code&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker ps&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;访问：&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;192.168.177.11:9000&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;shipyard&quot;&gt;shipyard&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;介绍
+shipyard是在docker swarm实现对容器、镜像、集群、仓库、节点进行管理的web系统。&lt;br /&gt;
+shipyard包含以下容器及启动顺序：&lt;br /&gt;
+（1）RethinkDB  作为数据库保存用户等信息&lt;br /&gt;
+（2）Discovery  一个外部的密码值存储容器&lt;br /&gt;
+（3）shipyard_certs  证书管理容器，实现证书验证功能&lt;br /&gt;
+（4）proxy  使用TLS转发请求从TCP到docker监听的socket&lt;br /&gt;
+（5）swarm manager  swarm管理器&lt;br /&gt;
+（6）swarm agent swarm代理，运行在每个节点上&lt;br /&gt;
+（7）controller  shipyard控制器，Remote API和web的实现。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;部署&lt;br /&gt;
+脚本：shipyard-deploy&lt;/p&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;chmod 755 shipyard-deploy
+sh shipyard-deploy   此时会创建以上七个容器，在浏览器访问8080端口即可看到shipyard登陆界面，登录用户名是admin，密码是shipyard
+修改web访问端口：
+cat shipyard-deploy | grep 8080
+sed -i 's|8080|80|g' shipyard-deploy
+重新部署
+sh shipyard-deploy
+删除shipyard环境
+cat shipyard-delpoy | ACTION = remove bash
+添加其他节点主机，在节点主机上操作
+cat shipyard-deploy | ACTION = node DISCOVERY = etcd://192.168.177.11:4001 bash
+删除节点机
+cat shipyard-deploy | ACTION = remove bash -s
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;portainer&quot;&gt;portainer&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;下载镜像&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker pull portainer/portainer&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;单机运行&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker run -d -p 9000:9000 --restart = always -v /var/run/docker.sock:/var/run/docker.sock --name portainer-test portainer/portainer&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;集群运行&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker run -d -p 9000:9000 --restart = always --name portainer-test portainer/portainer&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Fri, 22 Feb 2019 17:30:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/02/22/docker%E5%AE%B9%E5%99%A8%E5%8F%AF%E8%A7%86%E5%8C%96%E7%AE%A1%E7%90%86/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/22/docker%E5%AE%B9%E5%99%A8%E5%8F%AF%E8%A7%86%E5%8C%96%E7%AE%A1%E7%90%86/</guid>
+        
+        <category>学习</category>
+        
+        <category>docker</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>centos7下service(systemctl)的配置</title>
+        <description>&lt;h4 id=&quot;service介绍&quot;&gt;service介绍&lt;/h4&gt;
+&lt;p&gt;  service命令用于对系统服务进行管理，比如启动（start）、停止（stop）、重启（restart）、查看状态（status）等。
+在centos7之前，系统启动服务使用&lt;code class=&quot;highlighter-rouge&quot;&gt;service https start&lt;/code&gt;的方式启动，此时其实是启动了存放在/etc/init.d目录下的脚本，在centos7中，服务管理修改了规则，centos7集成了RHEL 7的新的特性，例如强大的systemctl，而systemctl的使用也使得以往系统服务的/etc/init.d的启动脚本的方式就此改变，也大幅提高了系统服务的运行效率。但服务的配置和以往也发生了极大的不同，说实在的，变的简单而易用了许多。&lt;/p&gt;
+&lt;h4 id=&quot;service配置&quot;&gt;service配置&lt;/h4&gt;
+&lt;p&gt;  centos7的服务配置文件默认位置在/usr/lib/systemd目录下，有系统和用户之分，需要开机不登录就能运行的程序，在系统服务里，即/usr/lib/systemd/system目录下。&lt;br /&gt;
+  每一个服务均以.service结尾，文件分为三部分，[Unit], [Service]和[Install]，完成脚本后，以754权限保存在以上目录。&lt;br /&gt;
+  以下为MongoDB集群的一个分片shard配置的服务示例mongo_shard1.service:&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;[Unit]
+Description = mongodb service:shard1 Primary
+After = syslog.target  network.target
+
+[Service]
+Type = forking
+ExecStart = /usr/bin/mongod -f /data/config/primary.conf
+ExecStop = /bin/kill -2 $MAINPID
+KillMode = process
+Restart = on-failure
+User = root
+Group = root
+
+[Install]
+WantedBy = multi-user.target
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;service启动&quot;&gt;service启动&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;启动&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;systemctl start mongo_shard1&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;设置开启自启&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;systemctl enable mongo_shard1&lt;/code&gt;&lt;br /&gt;
+&lt;img src=&quot;../../../../img/404-bg.jpg&quot; style=&quot;width:50%&quot; /&gt;
+&lt;img src=&quot;../../../../img/404-bg.jpg&quot; alt=&quot;hello&quot; /&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Fri, 22 Feb 2019 16:30:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/02/22/centos7%E4%B8%8Bservice(systemctl)%E7%9A%84%E9%85%8D%E7%BD%AE/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/22/centos7%E4%B8%8Bservice(systemctl)%E7%9A%84%E9%85%8D%E7%BD%AE/</guid>
+        
+        <category>学习</category>
+        
+        <category>centos7</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>docker集群管理技术--swarm</title>
+        <description>&lt;h4 id=&quot;swarm介绍&quot;&gt;swarm介绍&lt;/h4&gt;
+&lt;p&gt;swarm是用来部署服务的docker Engine集群。&lt;/p&gt;
+&lt;h4 id=&quot;swarm&quot;&gt;swarm&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;创建一个swarm
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;docker swarm init --advertise-addr 192.179.177.11
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;查看swarm状态
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;docker info
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;第一步执行后会生成加入新节点的swarm命令，执行命令后加入的新节点作为manager或worker&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;docker node ls&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;加入节点命令
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker swarm join --token 192.168,177.11:2377&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;查询添加节点的命令
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker swarm join-token worker&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;docker node ls&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;服务service&quot;&gt;服务service&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;部署服务
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker service create --replicas 3 | --name hello -p 80:80 nginx&lt;/code&gt;  —&amp;gt; 启动一个副本数为3的nginx服务
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker service ls&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;查询服务的详细信息
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker service inspect --pretty hello&lt;/code&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker service ps hello&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;扩容缩容
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker service scale hello=5&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;删除服务
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker service rm hello&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;滚动更新
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker service create --replicas 3 --name redis --update-deloy 10s redis:3.0.6&lt;/code&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker service update --image redis:3.0.7 redis&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;下线节点
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker node update --availability drain worker1&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;上线节点
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker node update --availability active worker1&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;发布服务器端口
+-publish 80：80
+TCP -p 53:53/tcp
+UDP -p 53:53/udp&lt;/li&gt;
+  &lt;li&gt;升级或降级节点
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker node promote node-2 w-&amp;gt;m&lt;/code&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;docker node demote node-12&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Thu, 21 Feb 2019 04:30:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/02/21/docker%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E6%8A%80%E6%9C%AF-swarm/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/21/docker%E9%9B%86%E7%BE%A4%E7%AE%A1%E7%90%86%E6%8A%80%E6%9C%AF-swarm/</guid>
+        
+        <category>学习</category>
+        
+        <category>docker</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>MongoDB副本集搭建</title>
+        <description>&lt;h4 id=&quot;副本集介绍&quot;&gt;副本集介绍&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;MongoDB 副本集（Replica Set）是有自动故障恢复功能的主从集群，有一个Primary节点和一个或多个Secondary节点组成。类似于MySQL的MMM架构。&lt;/li&gt;
+  &lt;li&gt;副本集中数据同步过程：&lt;br /&gt;
+  Primary节点写入数据，Secondary通过读取Primary的oplog得到复制信息，开始复制数据并且将复制信息写入到自己的oplog。如果某个操作失败，则备份节点停止从当前数据源复制数据。如果某个备份节点由于某些原因挂掉了，当重新启动后，就会自动从oplog的最后一个操作开始同步，同步完成后，将信息写入自己的oplog，由于复制操作是先复制数据，复制完成后再写入oplog，有可能相同的操作会同步两份，不过MongoDB在设计之初就考虑到这个问题，将oplog的同一个操作执行多次，与执行一次的效果是一样的。&lt;br /&gt;
+简单的说就是：&lt;br /&gt;
+当Primary节点完成数据操作后，Secondary会做出一系列的动作保证数据的同步：&lt;br /&gt;
+1：检查自己local库的oplog.rs集合找出最近的时间戳。&lt;br /&gt;
+2：检查Primary节点local库oplog.rs集合，找出大于此时间戳的记录。&lt;br /&gt;
+3：将找到的记录插入到自己的oplog.rs集合中，并执行这些操作。&lt;br /&gt;
+  副本集的同步和主从同步一样，都是异步同步的过程，不同的是副本集有个自动故障转移的功能。其原理是：slave端从primary端获取日志，然后在自己身上完全顺序的执行日志所记录的各种操作（该日志是不记录查询操作的），这个日志就是local数据 库中的oplog.rs表，默认在64位机器上这个表是比较大的，占磁盘大小的5%，oplog.rs的大小可以在启动参数中设 定：–oplogSize 1000,单位是M。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;副本集搭建&quot;&gt;副本集搭建&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;配置文件
+&lt;code class=&quot;highlighter-rouge&quot;&gt;27017.config&lt;/code&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;dbpath = /data/mongo/db/27017
+logpath = /data/mongo/log/27107.log
+pidfilepath = /data/mongo/db/27017/27017.pid
+replSet = mongo_sep          ---&amp;gt;  副本集名称
+bind_ip = task               ---&amp;gt;  绑定服务ip
+port = 27017                 ---&amp;gt;  服务占有端口
+oplogSize = 30720            ---&amp;gt; 设置oplog大小
+logappend = true             ---&amp;gt; 追加日志
+fork = true                  ---&amp;gt; 以守护进程运行
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;启动mongod服务&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;./bin/mongod -f ./conf/27017.config &amp;amp;&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;查看mongo状态
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;./mongo 192.168.177.11:27017
+use admin
+rs.status();
+conf = {_id : 'mongo_sep', members: [{_id: 0, host: 'task:27017', priority: 10}, {_id : 1, host: 'task:28017', priority: 1}, {_id : 2, host: 'task:29017', arbiterOnly : true}]};
+rs.initiate(conf);
+rs.reconfig(conf);  若修改配置的话
+rs.reconfig(conf, {'force': true})  强行修改配置
+rs.status();  查看副本集是否成功
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;注意，配置文件需要三份，用于分别启动三个不同的mongod服务，端口分别为27017，28017，29017。&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Thu, 21 Feb 2019 04:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/02/21/MongoDB%E5%89%AF%E6%9C%AC%E9%9B%86%E6%90%AD%E5%BB%BA/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/21/MongoDB%E5%89%AF%E6%9C%AC%E9%9B%86%E6%90%AD%E5%BB%BA/</guid>
+        
+        <category>学习</category>
+        
+        <category>centos7</category>
+        
+        <category>MongoDB</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>SSH免密码登录配置</title>
+        <description>&lt;h4 id=&quot;ssh介绍&quot;&gt;SSH介绍&lt;/h4&gt;
+&lt;p&gt;SSH是建立在应用层和传输层基础上的安全协议，其目的是为了远程登录会话和其他网络服务提供安全性的保障。
+SSH密钥可实现无密码登录&lt;/p&gt;
+&lt;h4 id=&quot;ssh无密码配置&quot;&gt;SSH无密码配置&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;检查是否生成过SSH密钥
+切换到.ssh目录，&lt;code class=&quot;highlighter-rouge&quot;&gt;cd ~/.ssh&lt;/code&gt;
+如果存在则表示已生成ssh密钥&lt;/li&gt;
+  &lt;li&gt;使用ssh-keygen生成ssh密钥
+&lt;code class=&quot;highlighter-rouge&quot;&gt;ssh-heygen -t rsa | dsa&lt;/code&gt;
+生成ssh密钥之后，可以在～/.ssh目录下查看相关文件，一般ssh密钥包含id_rsa和id_rsa.pub两个文件，分别表示生成的密钥和公钥。&lt;/li&gt;
+  &lt;li&gt;将.pub文件复制到另一台机器的.ssh目录下，并执行下面命令：
+&lt;code class=&quot;highlighter-rouge&quot;&gt;cat id_rsa.pub &amp;gt;&amp;gt; ~/.ssh/authorized_keys&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;此时，私钥服务器可无密码登录公钥服务器，直接使用&lt;code class=&quot;highlighter-rouge&quot;&gt;ssh 192.168.177.11&lt;/code&gt;就可远程登录该服务器。
+    &lt;h4 id=&quot;双向免密码登录配置&quot;&gt;双向免密码登录配置&lt;/h4&gt;
+    &lt;p&gt;在A、B两台服务器都执行&lt;code class=&quot;highlighter-rouge&quot;&gt;ssh-heygen -t rsa&lt;/code&gt;命令，并将生成的公钥文件都发到对方的～/.ssh目录下，接着执行&lt;code class=&quot;highlighter-rouge&quot;&gt;cat id_rsa.pub &amp;gt;&amp;gt; ~/.ssh/authorized_keys&lt;/code&gt;即可实现双向免密码登录。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Thu, 21 Feb 2019 01:20:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/02/21/SSH%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E9%85%8D%E7%BD%AE/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/21/SSH%E5%85%8D%E5%AF%86%E7%A0%81%E7%99%BB%E5%BD%95%E9%85%8D%E7%BD%AE/</guid>
+        
+        <category>学习</category>
+        
+        <category>centos7</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Django命令汇总</title>
+        <description>&lt;ol&gt;
+  &lt;li&gt;创建django工程&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;django-admin startproject demo&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;创建django app&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;django-admin startapp test&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;创建数据库表 &lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py makemigrations&lt;/code&gt;        —-&amp;gt; 创建更改的文件&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py migrate&lt;/code&gt;               —-&amp;gt; 将改变应用到数据库&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py syncdb&lt;/code&gt;                —-&amp;gt;旧版本使用&lt;/li&gt;
+  &lt;li&gt;运行django服务&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py runserver 0.0.0.0:8000&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;清空数据库&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py flush&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;创建超级管理员&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py createsuperuser&lt;/code&gt;&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py changepassword username&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;导入数据，导出数据&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py dumpdata appname &amp;gt; appname.json&lt;/code&gt;&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py loaddata appname.json&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;进入shell&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py shell&lt;/code&gt;&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;python manage.py dbshell&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Thu, 21 Feb 2019 01:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/02/21/Django%E5%91%BD%E4%BB%A4%E6%B1%87%E6%80%BB/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/21/Django%E5%91%BD%E4%BB%A4%E6%B1%87%E6%80%BB/</guid>
+        
+        <category>学习</category>
+        
+        <category>django</category>
+        
+        <category>python</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>centos7安装mamcached</title>
+        <description>&lt;h4 id=&quot;memcached介绍&quot;&gt;memcached介绍&lt;/h4&gt;
+&lt;p&gt;memcached是一个高性能的分布式的内存对象缓存系统，原理是将数据调到内存中，然后从内存中读取，从而大大提高了读取速度。（用在动态应用中减少数据库负载，提高访问速度），数据只存储在内存中，不进行持久化。&lt;br /&gt;
+&lt;strong&gt;分布式计算是将N颗cpu组装成一颗。&lt;/strong&gt;&lt;br /&gt;
+&lt;strong&gt;分布式慢速存储是将N个硬盘组成一个大硬盘。&lt;/strong&gt; &lt;br /&gt;
+&lt;strong&gt;memcached是将N个内存组装成一个大内存。&lt;/strong&gt;&lt;/p&gt;
+&lt;h4 id=&quot;memcached安装&quot;&gt;memcached安装&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;yum安装
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;yum install libevent libevent-devel
+yum install memcached
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;源代码安装
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;wget http://memcached.org/latest     -----&amp;gt;   下载
+tar -zxvf memcached-1.x.tar.gz       -----&amp;gt;   解压
+cd memcached-1.x
+./configure  --prefix=/usr/local/memcached   ----&amp;gt;   配置
+make &amp;amp;&amp;amp; make test                 -----&amp;gt;     编译
+make install                      -----&amp;gt;     安装
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;memcached运行&quot;&gt;memcached运行&lt;/h4&gt;
+&lt;p&gt;进入&lt;code class=&quot;highlighter-rouge&quot;&gt;/usr/local/bin/memcached&lt;/code&gt;目录&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;前台服务启动：&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;./memcached -p 11211 -m 64m -w&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;后台服务启动：
+&lt;code class=&quot;highlighter-rouge&quot;&gt;./memcached -p 11211 -m 64m -d&lt;/code&gt;&lt;br /&gt;
+或&lt;br /&gt;
+&lt;code class=&quot;highlighter-rouge&quot;&gt;./memcached -d -m 64m -u root -l 192.168.177.11 -p 11211 -c 256 -P /tmp/memcached.pid&lt;/code&gt;&lt;/li&gt;
+  &lt;li&gt;启动参数详解：&lt;br /&gt;
+-d : 启动一个进程&lt;br /&gt;
+-m : 分配的内存数量&lt;br /&gt;
+-u : 用户&lt;br /&gt;
+-l : ip地址&lt;br /&gt;
+-p : 监听的端口&lt;br /&gt;
+-c : 最大运行的并发数&lt;br /&gt;
+-P : 设置保存memcached的pid文件
+    &lt;h4 id=&quot;python访问memcached&quot;&gt;python访问memcached&lt;/h4&gt;
+    &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;pip install pymemchched&lt;/code&gt;&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;from pymemcached.client.base import Client
+mc = Client('192.168.177.11', 11211)
+mc.set('name', 'yan')
+mc.get('name')
+
+mc.set_multi({'k1': 'v1', 'k2': 'v2'})
+mc.get_multi(['k1', 'k2'])
+mc.get_many(['k1', 'k2'])
+mc.delete_multi(['k1', 'k2'])
+
+mc.add('name', 'li')
+mc.replace('name', 'w')
+mc.delete('name')
+
+mc.append('name', 'hello')
+mc.prepend('name', 'hi')
+
+mc.incr('age', 1)
+mc.decr('age', 10)
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+</description>
+        <pubDate>Thu, 21 Feb 2019 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/02/21/centos7%E5%AE%89%E8%A3%85memcahed/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/21/centos7%E5%AE%89%E8%A3%85memcahed/</guid>
+        
+        <category>学习</category>
+        
+        <category>centos7</category>
+        
+        <category>python</category>
+        
+        <category>mamcached</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>spark初探</title>
+        <description>&lt;h4 id=&quot;概述&quot;&gt;概述&lt;/h4&gt;
+&lt;p&gt;  spark是一个实现快速通用的集群计算平台。它是由加州大学伯克利分校AMP实验室 开发的通用内存并行计算框架，用来构建大型的、低延迟的数据分析应用程序。它扩展了广泛使用的MapReduce计算模型。高效的支撑更多计算模式，包括交互式查询和流处理。spark的一个主要特点是能够在内存中进行计算，及时依赖磁盘进行复杂的运算，Spark依然比MapReduce更加高效。&lt;/p&gt;
+
+&lt;h4 id=&quot;运行模式&quot;&gt;运行模式&lt;/h4&gt;
+&lt;ol&gt;
+  &lt;li&gt;local 本地模式，开发调试&lt;/li&gt;
+  &lt;li&gt;standalone  Spark自己可以给自己分配资源（master/slave架构）&lt;/li&gt;
+  &lt;li&gt;apache Mesos 集成Mesos资源管理框架，spark只负责计算&lt;/li&gt;
+  &lt;li&gt;hadoop YARN 集成yarn资源管理器，spark只负责任务调度和计算&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;rdd介绍&quot;&gt;RDD介绍&lt;/h4&gt;
+&lt;p&gt;  每个 Spark 应用程序都由一个驱动程序(driver programe)构成，驱动程序在集群上运行用户的 main 函数来执行各种各样的并行操作(parallel operations)。Spark 的主要抽象是提供一个弹性分布式数据集(RDD resilient distributed dataset)，RDD 是指能横跨集群所有节点进行并行计算的分区元素集合。&lt;br /&gt;
+  RDD 可以从 Hadoop 文件系统中的一个文件中创建而来(或其他 Hadoop 支持的文件系统)，或者从一个已有的 Scala 集合转换得到。用户可以要求 Spark 将 RDD 持久化(persist)到内存中，来让它在并行计算中高效地重用。最后，RDD 能从节点失败中自动地恢复过来。&lt;/p&gt;
+
+&lt;h4 id=&quot;开始spark&quot;&gt;开始spark&lt;/h4&gt;
+&lt;p&gt;  Spark 编程的第一步是需要创建一个 SparkContext 对象，用来告诉 Spark 如何访问集群。在创建 SparkContext 之前，你需要构建一个 SparkConf 对象， SparkConf 对象包含了一些你应用程序的信息。&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;val conf = new SparkConf().setAppName(appName).setMaster(master)
+new SparkContext(conf)
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;  appName 参数是你程序的名字，它会显示在 cluster UI 上。master 是 Spark, Mesos 或 YARN 集群的 URL，或运行在本地模式时，使用专用字符串 “local”。在实践中，当应用程序运行在一个集群上时，你并不想要把 master 硬编码到你的程序中，你可以用 spark-submit 启动你的应用程序的时候传递它。然而，你可以在本地测试和单元测试中使用 “local” 运行 Spark 进程。&lt;/p&gt;
+
+&lt;h4 id=&quot;rdd创建&quot;&gt;RDD创建&lt;/h4&gt;
+&lt;p&gt;  Spark 核心的概念是 Resilient Distributed Dataset (RDD)：一个可并行操作的有容错机制的数据集合。有 2 种方式创建 RDDs：第一种是在你的驱动程序中并行化一个已经存在的集合；另外一种是引用一个外部存储系统的数据集，例如共享的文件系统，HDFS，HBase或其他 Hadoop 数据格式的数据源。&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;并行集合&lt;br /&gt;
+  并行集合 (Parallelized collections) 的创建是通过在一个已有的集合(Scala Seq)上调用 SparkContext 的 parallelize 方法实现的。集合中的元素被复制到一个可并行操作的分布式数据集中。例如，这里演示了如何在一个包含 1 到 5 的数组中创建并行集合：
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;val data = Array(1, 2, 3, 4, 5)
+val distData = sc.parallelize(data)
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;p&gt;  一旦创建完成，这个分布式数据集(distData)就可以被并行操作。例如，我们可以调用 distData.reduce((a, b) =&amp;gt; a + b) 将这个数组中的元素相加。我们以后再描述在分布式上的一些操作。&lt;br /&gt;
+  并行集合一个很重要的参数是切片数(slices)，表示一个数据集切分的份数。Spark 会在集群上为每一个切片运行一个任务。你可以在集群上为每个 CPU 设置 2-4 个切片(slices)。正常情况下，Spark 会试着基于你的集群状况自动地设置切片的数目。然而，你也可以通过 parallelize 的第二个参数手动地设置(例如：sc.parallelize(data, 10))。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;外部数据集&lt;br /&gt;
+  Spark 可以从任何一个 Hadoop 支持的存储源创建分布式数据集，包括你的本地文件系统，HDFS，Cassandra，HBase，Amazon S3等。 Spark 支持文本文件(text files)，SequenceFiles 和其他 Hadoop InputFormat。&lt;br /&gt;
+  文本文件 RDDs 可以使用 SparkContext 的 textFile 方法创建。 在这个方法里传入文件的 URI (机器上的本地路径或 hdfs://，s3n:// 等)，然后它会将文件读取成一个行集合。这里是一个调用例子：
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;scala&amp;gt; val distFile = sc.textFile(&quot;data.txt&quot;)
+distFile: RDD[String] = MappedRDD@1d4cee08
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;p&gt;  一旦创建完成，distFiile 就能做数据集操作。例如，我们可以用下面的方式使用 map 和 reduce 操作将所有行的长度相加：distFile.map(s =&amp;gt; s.length).reduce((a, b) =&amp;gt; a + b)。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;rdd操作&quot;&gt;RDD操作&lt;/h4&gt;
+&lt;p&gt;  RDDs 支持 2 种类型的操作：转换(transformations) 从已经存在的数据集中创建一个新的数据集；动作(actions) 在数据集上进行计算之后返回一个值到驱动程序。例如，map 是一个转换操作，它将每一个数据集元素传递给一个函数并且返回一个新的 RDD。另一方面，reduce 是一个动作，它使用相同的函数来聚合 RDD 的所有元素，并且将最终的结果返回到驱动程序(不过也有一个并行 reduceByKey 能返回一个分布式数据集)。&lt;br /&gt;
+  在 Spark 中，所有的转换(transformations)都是惰性(lazy)的，它们不会马上计算它们的结果。相反的，它们仅仅记录转换操作是应用到哪些基础数据集(例如一个文件)上的。转换仅仅在这个时候计算：当动作(action) 需要一个结果返回给驱动程序的时候。这个设计能够让 Spark 运行得更加高效。例如，我们可以实现：通过 map 创建一个新数据集在 reduce 中使用，并且仅仅返回 reduce 的结果给 driver，而不是整个大的映射过的数据集。&lt;br /&gt;
+  默认情况下，每一个转换过的 RDD 会在每次执行动作(action)的时候重新计算一次。然而，你也可以使用 persist (或 cache)方法持久化(persist)一个 RDD 到内存中。在这个情况下，Spark 会在集群上保存相关的元素，在你下次查询的时候会变得更快。在这里也同样支持持久化 RDD 到磁盘，或在多个节点间复制。&lt;br /&gt;
+  为了说明 RDD 基本知识，考虑下面的简单程序：&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;val lines = sc.textFile(&quot;data.txt&quot;)
+val lineLengths = lines.map(s =&amp;gt; s.length)
+val totalLength = lineLengths.reduce((a, b) =&amp;gt; a + b)
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;  第一行是定义来自于外部文件的 RDD。这个数据集并没有加载到内存或做其他的操作：lines 仅仅是一个指向文件的指针。第二行是定义 lineLengths，它是 map 转换(transformation)的结果。同样，lineLengths 由于懒惰模式也没有立即计算。最后，我们执行 reduce，它是一个动作(action)。在这个地方，Spark 把计算分成多个任务(task)，并且让它们运行在多个机器上。每台机器都运行自己的 map 部分和本地 reduce 部分。然后仅仅将结果返回给驱动程序。&lt;br /&gt;
+  如果我们想要再次使用 lineLengths，我们可以添加：
+&lt;code class=&quot;highlighter-rouge&quot;&gt;lineLengths.persist()&lt;/code&gt;&lt;br /&gt;
+在 reduce 之前，它会导致 lineLengths 在第一次计算完成之后保存到内存中。&lt;/p&gt;
+
+&lt;h4 id=&quot;常见的转换操作&quot;&gt;常见的转换操作&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;filter(func)：筛选出满足函数func的元素，并返回一个新的数据集&lt;/li&gt;
+  &lt;li&gt;map(func)：将每个元素传递到函数func中，并将结果返回为一个新的数据集&lt;/li&gt;
+  &lt;li&gt;flatMap(func)：与map()相似，但每个输入元素都可以映射到0或多个输出结果&lt;/li&gt;
+  &lt;li&gt;groupByKey()：应用于(K,V)键值对的数据集时，返回一个新的(K, Iterable)形式的数据集&lt;/li&gt;
+  &lt;li&gt;reduceByKey(func)：应用于(K,V)键值对的数据集时，返回一个新的(K, V)形式的数据集，其中的每个值是将每个key传递到函数func中进行聚合&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;常见的动作操作&quot;&gt;常见的动作操作&lt;/h4&gt;
+&lt;ul&gt;
+  &lt;li&gt;count() 返回数据集中的元素个数&lt;/li&gt;
+  &lt;li&gt;collect() 以数组的形式返回数据集中的所有元素&lt;/li&gt;
+  &lt;li&gt;first() 返回数据集中的第一个元素&lt;/li&gt;
+  &lt;li&gt;take(n) 以数组的形式返回数据集中的前n个元素&lt;/li&gt;
+  &lt;li&gt;reduce(func) 通过函数func（输入两个参数并返回一个值）聚合数据集中的元素&lt;/li&gt;
+  &lt;li&gt;foreach(func) 将数据集中的每个元素传递到函数func中运行*&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;rdd持久化&quot;&gt;RDD持久化&lt;/h4&gt;
+&lt;p&gt;  Spark最重要的一个功能是它可以通过各种操作（operations）持久化（或者缓存）一个集合到内存中。当你持久化一个RDD的时候，每一个节点都将参与计算的所有分区数据存储到内存中，并且这些 数据可以被这个集合（以及这个集合衍生的其他集合）的动作（action）重复利用。这个能力使后续的动作速度更快（通常快10倍以上）。对应迭代算法和快速的交互使用来说，缓存是一个关键的工具。&lt;br /&gt;
+  你能通过persist()或者cache()方法持久化一个rdd。首先，在action中计算得到rdd；然后，将其保存在每个节点的内存中。Spark的缓存是一个容错的技术-如果RDD的任何一个分区丢失，它 可以通过原有的转换（transformations）操作自动的重复计算并且创建出这个分区。&lt;br /&gt;
+  Spark自动的监控每个节点缓存的使用情况，利用最近最少使用原则删除老旧的数据。如果你想手动的删除RDD，可以使用RDD.unpersist()方法&lt;/p&gt;
+</description>
+        <pubDate>Tue, 19 Feb 2019 17:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/02/19/spark%E5%88%9D%E6%8E%A2/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/19/spark%E5%88%9D%E6%8E%A2/</guid>
+        
+        <category>学习</category>
+        
+        <category>spark</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>python列表字典排序</title>
+        <description>&lt;h3 id=&quot;按字典值排序默认为升序&quot;&gt;按字典值排序（默认为升序）&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;x = {1:2, 3:4, 4:3, 2:1, 0:0}&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;sorted_x = sorted(x.iteritems(), key=operator.itemgetter(1))&lt;br /&gt;
+print sorted_x  ——-»»  [(0, 0), (2, 1), (1, 2), (4, 3), (3, 4)]&lt;br /&gt;
+如果要降序排序,可以指定reverse=True&lt;/li&gt;
+  &lt;li&gt;sorted_x = sorted(x.iteritems(), key=operator.itemgetter(1), reverse=True)&lt;br /&gt;
+print sorted_x  ——-»»  [(3, 4), (4, 3), (1, 2), (2, 1), (0, 0)]&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;或者直接使用list的reverse方法将sorted_x顺序反转&quot;&gt;或者直接使用list的reverse方法将sorted_x顺序反转&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;sorted_x.reverse()&lt;/strong&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;更为常用的方法是用lambda表达式&quot;&gt;更为常用的方法是,用lambda表达式&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;sorted_x = sorted(x.iteritems(), key=lambda x : x[1])&lt;br /&gt;
+print sorted_x  ——-»»    [(0, 0), (2, 1), (1, 2), (4, 3), (3, 4)]&lt;/li&gt;
+  &lt;li&gt;sorted_x = sorted(x.iteritems(), key=lambda x : x[1], reverse=True)&lt;br /&gt;
+print sorted_x  ——-»»    [(3, 4), (4, 3), (1, 2), (2, 1), (0, 0)]&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;包含字典dict的列表list的排序方法与dict的排序类似如下&quot;&gt;包含字典dict的列表list的排序方法与dict的排序类似,如下：&lt;/h3&gt;
+&lt;p&gt;x = [{‘name’:’Homer’, ‘age’:39}, {‘name’:’Bart’, ‘age’:10}]&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;sorted_x = sorted(x, key=operator.itemgetter(‘name’))&lt;br /&gt;
+print sorted_x  ——-»»   [{‘age’: 10, ‘name’: ‘Bart’}, {‘age’: 39, ‘name’: ‘Homer’}]&lt;/li&gt;
+  &lt;li&gt;sorted_x = sorted(x, key=operator.itemgetter(‘name’), reverse=True)&lt;br /&gt;
+print sorted_x  ——-»»    [{‘age’: 39, ‘name’: ‘Homer’}, {‘age’: 10, ‘name’: ‘Bart’}]&lt;/li&gt;
+  &lt;li&gt;sorted_x = sorted(x, key=lambda x : x[‘name’])&lt;br /&gt;
+print sorted_x  ——-»»    [{‘age’: 10, ‘name’: ‘Bart’}, {‘age’: 39, ‘name’: ‘Homer’}]&lt;/li&gt;
+  &lt;li&gt;sorted_x = sorted(x, key=lambda x : x[‘name’], reverse=True)&lt;br /&gt;
+print sorted_x  ——-»»    [{‘age’: 39, ‘name’: ‘Homer’}, {‘age’: 10, ‘name’: ‘Bart’}]&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Tue, 19 Feb 2019 04:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/02/19/python%E5%88%97%E8%A1%A8%E5%AD%97%E5%85%B8%E6%8E%92%E5%BA%8F/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/02/19/python%E5%88%97%E8%A1%A8%E5%AD%97%E5%85%B8%E6%8E%92%E5%BA%8F/</guid>
+        
+        <category>学习</category>
+        
+        <category>python</category>
+        
+        
+      </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,41 @@
+---
+layout:     post
+title:      "python列表字典排序"
+subtitle:   ""
+date:       2019-02-18 20:00:00
+author:     "yan"
+header-img: "img/post-bg-2019-021.jpg"
+top-img: "/img/python.jpg"
+catalog: true
+tags:
+    - 学习
+    - python
+---
+### 按字典值排序（默认为升序）  
+**x = {1:2, 3:4, 4:3, 2:1, 0:0}**   
+1. sorted_x = sorted(x.iteritems(), key=operator.itemgetter(1))  
+print sorted_x  ------->>>>  [(0, 0), (2, 1), (1, 2), (4, 3), (3, 4)]  
+如果要降序排序,可以指定reverse=True  
+2. sorted_x = sorted(x.iteritems(), key=operator.itemgetter(1), reverse=True)  
+print sorted_x  ------->>>>  [(3, 4), (4, 3), (1, 2), (2, 1), (0, 0)]  
+
+
+### 或者直接使用list的reverse方法将sorted_x顺序反转  
+**sorted_x.reverse()**  
+
+### 更为常用的方法是,用lambda表达式  
+1. sorted_x = sorted(x.iteritems(), key=lambda x : x[1])  
+print sorted_x  ------->>>>    [(0, 0), (2, 1), (1, 2), (4, 3), (3, 4)]  
+2. sorted_x = sorted(x.iteritems(), key=lambda x : x[1], reverse=True)  
+print sorted_x  ------->>>>    [(3, 4), (4, 3), (1, 2), (2, 1), (0, 0)]  
+
+### 包含字典dict的列表list的排序方法与dict的排序类似,如下：  
+x = [{'name':'Homer', 'age':39}, {'name':'Bart', 'age':10}]  
+1. sorted_x = sorted(x, key=operator.itemgetter('name'))  
+print sorted_x  ------->>>>   [{'age': 10, 'name': 'Bart'}, {'age': 39, 'name': 'Homer'}]  
+2. sorted_x = sorted(x, key=operator.itemgetter('name'), reverse=True)  
+print sorted_x  ------->>>>    [{'age': 39, 'name': 'Homer'}, {'age': 10, 'name': 'Bart'}]  
+3. sorted_x = sorted(x, key=lambda x : x['name'])  
+print sorted_x  ------->>>>    [{'age': 10, 'name': 'Bart'}, {'age': 39, 'name': 'Homer'}]  
+4. sorted_x = sorted(x, key=lambda x : x['name'], reverse=True)  
+print sorted_x  ------->>>>    [{'age': 39, 'name': 'Homer'}, {'age': 10, 'name': 'Bart'}]

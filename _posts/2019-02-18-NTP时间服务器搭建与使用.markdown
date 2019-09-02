@@ -1,0 +1,52 @@
+---
+layout:     post
+title:      "NTP时间服务器搭建与使用"
+subtitle:   ""
+date:       2019-02-18 14:30:00
+author:     "yan"
+header-img: "img/post-bg-2019-021.jpg"
+top-img: "/img/s2.jpg"
+catalog: true
+tags:
+    - 学习
+    - NTP
+---
+### NTP介绍
+NTP（network time protocol)网络时间协议，把计算机的时钟同步到世界协调时UTC，精度极其高，利用NTP协议提供时间同步服务。
+`rpm -qa ntp` -->  查看本机ntp软件包
+#### 服务端安装
+1. 删除本地时区配置
+```
+rm -rf /etc/localtime
+ln -s /usr/share/zoneinfo/Asia/shanghai  /etc/localtime
+date -R
+Tue 07 Aug 2019 14:13:12 +0800  --> 东八区
+```
+2. 安装NTP
+```
+yum install -y ntp
+rpm -ivh ntp-4.2.6p5-28.el7.centos.x86_64.rpm (--nodeps) --> 解除依赖
+```
+3. 配置ntp服务器
+配置文件位于/etc/ntp.conf
+4. 启动ntp服务器
+```
+systemctlstart ntpd
+systemctl enable ntpd
+```
+5. 防火墙设置
+开放123端口：
+`firewall-cmd --zone=public --permanent --add-port=123/tcp`
+重启防火墙：
+`firewall-cmd --reload`
+#### 客户端安装
+与服务端安装方式相同，
+#### 时间同步
+1. linux
+设置定时任务
+```
+vi /etc/crontab
+0 */2 * * * root /usr/sbin/ntpdate '192.168.178.11'; /sbin/hwclock -w    --->  表示每两个小时执行一次同步任务
+```
+2. windows
+打开‘运行’界面，输入’gpedit.msc’，选择‘编辑策略’，’管理模块’>系统>win时间服务,设置ntp服务器地址即可。
