@@ -5,7 +5,7 @@ subtitle:   "使用的docker环境的存储管理"
 date:       2019-03-18 21:30:00
 author:     "yan"
 header-img: "img/post-bg-2019-01.jpg"
-top-img: "/img/gui1.jpg"
+top-img: "/img/090402.jpg"
 catalog: true
 tags:
     - 学习

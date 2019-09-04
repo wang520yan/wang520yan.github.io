@@ -80,23 +80,23 @@
     <div class="container-fluid">
       <!-- 打算设置logo，暂时放弃 -->
         <!-- Brand and toggle get grouped for better mobile display -->
-        <!-- <div class="navbar-header page-scroll">
+        <div class="navbar-header page-scroll">
             <button type="button" class="navbar-toggle">
                 <span class="sr-only">Toggle navigation</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <img src="img/logo.png" alt="" style="position: 'absolute'; width : 500px;">
-            <a class="navbar-brand" href="/">Yan Blog</a>
-        </div> -->
+            <!-- <img src="img/logo.png" alt="" style="position: 'absolute'; width : 500px;"> -->
+            <a class="navbar-brand" href="/" style="color: #08d0f7fc">Yan</a>
+        </div>
 
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div id="huxblog_navbar">
             <div class="navbar-collapse">
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="/"><h4>主页</h4></a>
+                        <a href="/"><h4 style="color: #08d0f7fc">主页</h4></a>
                     </li>
                     
                     
@@ -105,7 +105,7 @@
                     <li>
                         
                         
-                        <a href="/about/"><h4>关于</h4></a>
+                        <a href="/about/"><h4 style="color: #08d0f7fc">关于</h4></a>
                         
                         
                     </li>
@@ -114,7 +114,7 @@
                     
                     <li>
                         
-                        <a href="/archive/"><h4>文章</h4></a>
+                        <a href="/archive/"><h4 style="color: #08d0f7fc">文章</h4></a>
                         
                         
                         
@@ -128,7 +128,7 @@
                         
                         
                         
-                        <a href="/portfolio/"><h4>推荐</h4></a>
+                        <a href="/portfolio/"><h4 style="color: #08d0f7fc">推荐</h4></a>
                         
                     </li>
                     
@@ -141,6 +141,14 @@
                     </li>
                     
                     
+                    
+                    
+                    
+                    <li>
+                        
+                        
+                        
+                    </li>
                     
                     
                     
@@ -184,14 +192,17 @@
         }
     }
 
+
+
+
     // Bind Event
-    $toggle.addEventListener('click', function(e){
-        if ($navbar.className.indexOf('in') > 0) {
-            __HuxNav__.close()
-        }else{
-            __HuxNav__.open()
-        }
-    })
+    // $toggle.addEventListener('click', function(e){
+    //     if ($navbar.className.indexOf('in') > 0) {
+    //         __HuxNav__.close()
+    //     }else{
+    //         __HuxNav__.open()
+    //     }
+    // })
 
     /**
      * Since Fastclick is used to delegate 'touchstart' globally
@@ -209,6 +220,19 @@
         if(e.target.className == 'icon-bar') return;
         __HuxNav__.close();
     })
+
+    // place1.addEventListener('mouseenter', function () {
+    //   var ob = document.getElementById("palce3");
+    //   ob.setAttribute("class","bak");
+    // })
+
+    // var top_div1 = document.getElementById("place1");
+    // top_div1.onMouseOver=mouseAlert1;
+    //
+    // function mouseAlert1(){
+    //   alert("123");
+    //   // $("h4").css("background-color","yellow");
+    // }
 </script>
 
 
@@ -366,6 +390,13 @@
                     </li>
                     
                     
+                    <li class="next">
+                        <a href="/2019/09/05/centos7%E4%B8%8B%E5%B8%B8%E7%94%A8%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E7%9A%84%E6%90%AD%E5%BB%BA/" data-toggle="tooltip" data-placement="top" title="centos7下常用开发环境的搭建">
+                        Next<br>
+                        <span>centos7下常用开发环境的搭建</span>
+                        </a>
+                    </li>
+                    
                 </ul>
                 <hr style="visibility: hidden;">
 
@@ -378,7 +409,7 @@
                 
 
                 
-            </div>  
+            </div>
 
     <!-- Side Catalog Container -->
         
@@ -390,7 +421,7 @@
                 <div class="side-catalog">
                     <hr class="hidden-sm hidden-xs">
                     <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
+                        <a class="catalog-toggle" href="#">目录</a>
                     </h5>
                     <ul class="catalog-body"></ul>
                 </div>
@@ -423,27 +454,27 @@
                 <a data-sort="0001"
                     href="/archive/?tag=%E5%AD%A6%E4%B9%A0"
                     title="学习"
-                    rel="19">学习</a>
+                    rel="20">学习</a>
         
-                <a data-sort="0015"
+                <a data-sort="0016"
                     href="/archive/?tag=centos7"
                     title="centos7"
                     rel="5">centos7</a>
         
-                <a data-sort="0015"
+                <a data-sort="0016"
                     href="/archive/?tag=docker"
                     title="docker"
                     rel="5">docker</a>
         
                 <a data-sort="0016"
-                    href="/archive/?tag=linux"
-                    title="linux"
-                    rel="4">linux</a>
-        
-                <a data-sort="0016"
                     href="/archive/?tag=python"
                     title="python"
-                    rel="4">python
+                    rel="5">python</a>
+        
+                <a data-sort="0017"
+                    href="/archive/?tag=linux"
+                    title="linux"
+                    rel="4">linux
     </div>
 </section>
 
@@ -474,7 +505,7 @@
 
 
 <!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
+<!-- <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "yan";
     var disqus_identifier = "/2019/03/19/docker存储管理";
@@ -485,7 +516,7 @@
         dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     })();
-</script>
+</script> -->
 <!-- disqus 公共JS代码 end -->
 
 
@@ -504,14 +535,14 @@
 </script>
 <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
 <script>
-    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'always',
-          placement: 'right',
-          icon: '#'
-        };
-        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
-    })
+    // async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+    //     anchors.options = {
+    //       visible: 'always',
+    //       placement: 'right',
+    //       icon: '#'
+    //     };
+    //     anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    // })
 </script>
 <style>
     /* place left on bigger screen */

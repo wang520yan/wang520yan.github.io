@@ -1,0 +1,104 @@
+---
+layout:     post
+title:      "centos7下常用开发环境的搭建"
+subtitle:   "python、java、c、c++等环境的搭建"
+date:       2019-09-04 20:00:00
+author:     "yan"
+header-img: "img/shuimu.jpg"
+top-img: "/img/090401.jpg"
+catalog: true
+tags:
+    - 学习
+    - centos
+    - python
+---
+&emsp;&emsp;在安装开发环境之前，建议用户首先进行linux中已安装软件包的更新，执行下面命令进行更新（必须联网），更新时间可能会比较久，需要等待一段时间。   
+```
+yum update
+```
+#### C、C++环境
+&emsp;&emsp;服务器中安装的很多工具包都需要c语言和c++语言的环境支持，所以在服务器上部署其他服务之前首先进行c语言和c++语言的环境安装。  
+C环境：   
+```
+yum -y install gcc  
+```
+C++环境：   
+```
+yum -y install gcc-c++
+```
+#### python环境
+&emsp;&emsp;centos系统都预装有python2.7环境，所以在这里就不进行介绍python环境的安装，如果需要的话请参考python官网：https://www.python.org/downloads/。   
+```
+1. 安装epel扩展源   
+yum -y install epel-release
+2. 更新成功之后，安装python包管理工具pip   
+yum -y install python-pip
+3. 安装后清理cache   
+yum clean all
+4. 安装包失败可执行如下更新命令（更新pip工具）   
+pip install --upgrade pip  
+5. 安装python开发环境   
+yum -y install python-devel  
+yum -y install libevent-devel  
+yum -y install gevent
+yum -y install groupinstall 'development tools'  
+6. 升级setuptools   
+pip install --upgrade setuptools
+```  
+&emsp;&emsp;python常用的web开发框架Django及扩展包安装   
+```
+1. 安装Django   
+pip install django  
+2. 安装django跨域使用扩展包corsheaders   
+pip install django-cors-middleware  
+```
+#### java环境
+1. 下载jdk安装包，下载地址：http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html  
+或者在服务器上执行下面命令：   
+```
+wget http://download.oracle.com/otn-pub/java/jdk/8u171-b11/512cd62ec5174c3487ac17c61aaa89e8/jdk-8u171-linux-x64.tar.gz?AuthParam=1531155951_4e06a4d17c6c1dbfb8440352e19dd2ae
+```
+该下载地址已失效 请自行在官网复制下载地址   
+2. 下载好jdk-8u171-linux-x64.tar.gz安装包后，将安装包放在centos服务器中，
+3. 在服务器上创建安装目录   
+`mkdir /usr/local/java/`     
+4. 将安装包解压至安装目录   
+`tar -zxvf jdk-8u171-linux-x64.tar.gz -C /usr/local/java/`   
+5. 设置环境变量，打开文件/etc/profile，在文件末行插入下面信息后保存。   
+```
+export JAVA_HOME=/usr/local/java/jdk1.8.0_171
+export JRE_HOME=${JAVA_HOME}/jre
+export CLASSPATH=.:${JAVA_HOME}/lib:${JRE_HOME}/lib
+export PATH=${JAVA_HOME}/bin:$PATH
+```
+6. 执行下面命令使配置生效   
+`source /etc/profile`
+7. 添加软链接   
+`ln -s /usr/local/java/jdk1.8.0_171/bin/java /usr/bin/java`
+8. 检查是否安装成功   
+`java -version`   
+#### docker环境
+1.安装docker   
+`yum install docker`   
+2.设置系统启动自动加载   
+`service docker start`   
+`chkconfig docker on`   
+3.docker容器中文编码解决方案  
+
+```
+1.
+vi /etc/profile
+export LANG = en_US.UTF-8
+用该方法设置之后，每次启动容器之后都要执行一次source /etc/profile命令使配置生效。
+
+2.
+vi /root/.bashrc
+export LANG = en_US.UTF-8
+用该方法设置之后，不需要在容器启动后执行配置激活命令。
+```
+4.清理docker容器日志   
+(1) `docker inspect 容器id或容器名`    
+(2)找到log文件所在的位置，一般为/var/log/----/log-json.log   
+(3)执行命令清理日志：   
+`cat /dev/null > /var/log/----/log-json.log`   
+over
