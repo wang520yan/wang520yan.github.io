@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "centos7下常用开发环境的搭建"
-subtitle:   "python、java、c、c++等环境的搭建"
+subtitle:   "python、java、c、c++、docker等环境的搭建"
 date:       2019-09-04 20:00:00
 author:     "yan"
 header-img: "img/shuimu.jpg"
