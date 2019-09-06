@@ -31,11 +31,11 @@
                         {% if page.title == "Archive" %}
                         <a href="{{ page.url | prepend: site.baseurl }}"><h4 style="color: #08d0f7fc">文章</h4></a>
                         {% endif %}
+                        {% if page.title == "Portfolio" %}
+                        <a href="{{ page.url | prepend: site.baseurl }}"><h4 style="color: #08d0f7fc">游记</h4></a>
+                        {% endif %}
                         {% if page.title == "About" %}
                         <a href="{{ page.url | prepend: site.baseurl }}"><h4 style="color: #08d0f7fc">关于</h4></a>
-                        {% endif %}
-                        {% if page.title == "Portfolio" %}
-                        <a href="{{ page.url | prepend: site.baseurl }}"><h4 style="color: #08d0f7fc">推荐</h4></a>
                         {% endif %}
                     </li>
                     {% endif %}

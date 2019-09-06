@@ -24,7 +24,7 @@ yum -y install gcc
 ```
 C++环境：   
 ```
-yum -y install gcc-c++
+yum -y install gcc-c++ libstdc++-devel
 ```
 #### python环境
 &emsp;&emsp;centos系统都预装有python2.7环境，所以在这里就不进行介绍python环境的安装，如果需要的话请参考python官网：https://www.python.org/downloads/。   

@@ -5,9 +5,130 @@
     <description>代码编织梦想，程序创造未来</description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Thu, 05 Sep 2019 00:06:16 +0800</pubDate>
-    <lastBuildDate>Thu, 05 Sep 2019 00:06:16 +0800</lastBuildDate>
+    <pubDate>Fri, 06 Sep 2019 22:13:36 +0800</pubDate>
+    <lastBuildDate>Fri, 06 Sep 2019 22:13:36 +0800</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>python编码问题</title>
+        <description>&lt;h3 id=&quot;常用编码&quot;&gt;常用编码&lt;/h3&gt;
+&lt;ol&gt;
+  &lt;li&gt;ASCII编码：   &lt;br /&gt;
+ 8个比特作为一个字节（byte）&lt;/li&gt;
+  &lt;li&gt;Unicode编码： &lt;br /&gt;
+ 常用的是2个字节表示一个字符，所以用Unicode编码比ASCII编码要多一倍的存储空间。&lt;/li&gt;
+  &lt;li&gt;UTF-8编码（可变长编码）： &lt;br /&gt;
+ UTF-8编码把一个Unicode字符根据不同的数字大小编码成1-6个字节，常用的英文字母被编译成1个字节，汉字通常是3个字节，只有很生僻的字符才会被编码成4-6个字符。&lt;/li&gt;
+  &lt;li&gt;GB2312简体中文编码： &lt;br /&gt;
+ 一个汉字占用2个字节，该编码遇到繁体中文、日文、韩文时，这些文字内容无法被正确编码。&lt;/li&gt;
+  &lt;li&gt;BIG5繁体中文编码： &lt;br /&gt;
+ 在台湾地区使用。&lt;/li&gt;
+  &lt;li&gt;GBK编码： &lt;br /&gt;
+ 支持简体及繁体中文，但对他国非拉丁字母还有问题。可以表示21886个字符。&lt;/li&gt;
+  &lt;li&gt;GB18030字符集： &lt;br /&gt;
+ 解决了中文、日文、朝鲜语系的编码，兼容GBK，可以表示27484个文字。
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;ep:
+字符      ASCII           Unicode                    UTF-8
+ A      01000001     00000000 01000001             01000001
+ 中        X         01001110 00101101     11100100 10111000 10101101
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;h3 id=&quot;编码原理&quot;&gt;编码原理&lt;/h3&gt;
+    &lt;p&gt;  在计算机内存中，统一使用&lt;strong&gt;Unicode&lt;/strong&gt;编码，当需要保存到硬盘或需要传输的时候，就转换为UTF-8编码。 &lt;br /&gt;
+以记事本为例：&lt;/p&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;                           Unicode编码
+                 ↗                           |
+                 |                           ↘
+             读取，转换为Unicode         保存，转换为UTF-8编码
+                 ↗                           |
+                 |                           |
+               txt文件                     txt文件
+                 ↗                           |
+                 |                           ↘
+                             UTF-8编码
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;h3 id=&quot;编码介绍&quot;&gt;编码介绍&lt;/h3&gt;
+    &lt;p&gt;1.ANSI–&amp;gt; ASCII 用于保存英文文字 &lt;br /&gt;
+  一个字节，共有8个比特位，有256个字符，其中ASCII使用了127个，用于表示所有的空格、标点符号、数字、大小写字母。 &lt;br /&gt;
+  采用127号之后的空位来表示这些新的字母、符号，加入了很多画表格时需要用下到的横线、竖线、交叉等形状，一直把序号编到了 最后一个状态255。从128到255这一页的字符集被称”扩展字符集。 &lt;br /&gt;
+2.GB2312（扩展了ANSI） &lt;br /&gt;
+  用两个字节表示，一个小于127的字符的意义与原来相同，但两个大于127的字符连在一起时，就表示一个汉字，前面的一个字节（他称之为高字节）从0xA1用到 0xF7，后面一个字节（低字节）从0xA1到0xFE，这样我们就可以组合出大约7000多个简体汉字了。在这些编码里，我们还把数学符号、罗马希腊的字母、日文的假名们都编进去了，连在 ASCII 里本来就有的数字、标点、字母都统统重新编了两个字节长的编码，这就是常说的”全角”字符，而原来在127号以下的那些就叫”半角”字符了 &lt;br /&gt;
+3.GBK（扩展了GB2312） &lt;br /&gt;
+  GBK不再要求低字节一定是127号之后的内码，只要第一个字节是大于127就固定表示这是一个汉字的开始，不管后面跟的是不是扩展字符集里的内容。结果扩展之后的编码方案被称为 GBK 标准，GBK 包括了 GB2312 的所有内容，同时又增加了近20000个新的汉字（包括繁体字）和符号。后来少数民族也要用电脑了，我们再扩展，又加了几千个新的少数民族的字，GBK 扩成了 GB18030。 &lt;br /&gt;
+4.Unicode(统一规范) &lt;br /&gt;
+  一律使用2个字节，即16位统一表示所有的字符。 &lt;br /&gt;
+Unicode与UTF-8编码转换规则&lt;/p&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;Unicode               --&amp;gt;            UTF-8
+0000 – 007F                            0xxxxxxx                    1个字节
+0080 – 07FF                       110xxxxx 10xxxxxx                2个字节
+0800 – FFFF                    1110xxxx 10xxxxxx 10xxxxxx          3个字节
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;p&gt;举例说明该转换规则： &lt;br /&gt;
+  汉字‘汉’的Unicode编码对应是6C49，在6C49位于0800-FFFF之间，所以要用3字节模板：1110xxxx 10xxxxxx 10xxxxxx。将6C49写成二进制是：0110 1100 0100 1001，将这个比特流按三字节模板的分段方法分为0110 110001 001001，依次代替模板中的x，得到：1110-0110 10-110001 10-001001，即E6 B1 89，这就是其UTF8的编码。&lt;/p&gt;
+    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;                            6C49
+                       0800&amp;lt;6C49&amp;lt;FFFF
+             模版：1110xxxx 10xxxxxx 10xxxxxx
+                            6C49         Unicode编码
+                             |
+               0110    1100   0100    1001
+                             |
+                 0110    110001     001001
+                             |  带入模版，替换X
+             11100110    10110001    10001001
+                             |
+           1110    0110   1011   0001   1000   1001
+                             |
+                     E6     B1     89      UTF-8编码
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;h3 id=&quot;python编码&quot;&gt;python编码&lt;/h3&gt;
+    &lt;p&gt;  字符串在Python内部的表示是&lt;strong&gt;unicode&lt;/strong&gt;编码，因此，在做编码转换时，通常需要以unicode作为中间编码，即现将其他编码的字符串解码（decode）成unicode，再从unicode编码（encode）成另外一种编码。原有编码–&amp;gt;内部编码Unicode–&amp;gt;目标编码  &lt;br /&gt;
+  &lt;strong&gt;decode&lt;/strong&gt;的作用是将其他编码的字符串转换成unicode编码，如str1.decode(‘gb2312’)，表示将gb2312编码的字符串转换成unicode编码。 &lt;br /&gt;
+  &lt;strong&gt;encode&lt;/strong&gt;的作用是将unicode编码转换成其他编码的字符串，如str2.encode(‘gb2312’)，表示将unicode编码的字符串转换成gb2312编码。 &lt;br /&gt;
+over&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        <pubDate>Sat, 07 Sep 2019 02:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2019/09/07/python%E7%BC%96%E7%A0%81%E9%97%AE%E9%A2%98/</link>
+        <guid isPermaLink="true">http://localhost:4000/2019/09/07/python%E7%BC%96%E7%A0%81%E9%97%AE%E9%A2%98/</guid>
+        
+        <category>学习</category>
+        
+        <category>python</category>
+        
+        
+      </item>
     
       <item>
         <title>centos7下常用开发环境的搭建</title>
@@ -23,7 +144,7 @@ C环境：&lt;/p&gt;
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;p&gt;C++环境：&lt;/p&gt;
 &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;yum -y install gcc-c++
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;yum -y install gcc-c++ libstdc++-devel
 &lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
 &lt;h4 id=&quot;python环境&quot;&gt;python环境&lt;/h4&gt;
 &lt;p&gt;  centos系统都预装有python2.7环境，所以在这里就不进行介绍python环境的安装，如果需要的话请参考python官网：https://www.python.org/downloads/。&lt;/p&gt;
@@ -697,109 +818,6 @@ mc.decr('age', 10)
         <category>python</category>
         
         <category>mamcached</category>
-        
-        
-      </item>
-    
-      <item>
-        <title>spark初探</title>
-        <description>&lt;h4 id=&quot;概述&quot;&gt;概述&lt;/h4&gt;
-&lt;p&gt;  spark是一个实现快速通用的集群计算平台。它是由加州大学伯克利分校AMP实验室 开发的通用内存并行计算框架，用来构建大型的、低延迟的数据分析应用程序。它扩展了广泛使用的MapReduce计算模型。高效的支撑更多计算模式，包括交互式查询和流处理。spark的一个主要特点是能够在内存中进行计算，及时依赖磁盘进行复杂的运算，Spark依然比MapReduce更加高效。&lt;/p&gt;
-
-&lt;h4 id=&quot;运行模式&quot;&gt;运行模式&lt;/h4&gt;
-&lt;ol&gt;
-  &lt;li&gt;local 本地模式，开发调试&lt;/li&gt;
-  &lt;li&gt;standalone  Spark自己可以给自己分配资源（master/slave架构）&lt;/li&gt;
-  &lt;li&gt;apache Mesos 集成Mesos资源管理框架，spark只负责计算&lt;/li&gt;
-  &lt;li&gt;hadoop YARN 集成yarn资源管理器，spark只负责任务调度和计算&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4 id=&quot;rdd介绍&quot;&gt;RDD介绍&lt;/h4&gt;
-&lt;p&gt;  每个 Spark 应用程序都由一个驱动程序(driver programe)构成，驱动程序在集群上运行用户的 main 函数来执行各种各样的并行操作(parallel operations)。Spark 的主要抽象是提供一个弹性分布式数据集(RDD resilient distributed dataset)，RDD 是指能横跨集群所有节点进行并行计算的分区元素集合。&lt;br /&gt;
-  RDD 可以从 Hadoop 文件系统中的一个文件中创建而来(或其他 Hadoop 支持的文件系统)，或者从一个已有的 Scala 集合转换得到。用户可以要求 Spark 将 RDD 持久化(persist)到内存中，来让它在并行计算中高效地重用。最后，RDD 能从节点失败中自动地恢复过来。&lt;/p&gt;
-
-&lt;h4 id=&quot;开始spark&quot;&gt;开始spark&lt;/h4&gt;
-&lt;p&gt;  Spark 编程的第一步是需要创建一个 SparkContext 对象，用来告诉 Spark 如何访问集群。在创建 SparkContext 之前，你需要构建一个 SparkConf 对象， SparkConf 对象包含了一些你应用程序的信息。&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
-2
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;val conf = new SparkConf().setAppName(appName).setMaster(master)
-new SparkContext(conf)
-&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;  appName 参数是你程序的名字，它会显示在 cluster UI 上。master 是 Spark, Mesos 或 YARN 集群的 URL，或运行在本地模式时，使用专用字符串 “local”。在实践中，当应用程序运行在一个集群上时，你并不想要把 master 硬编码到你的程序中，你可以用 spark-submit 启动你的应用程序的时候传递它。然而，你可以在本地测试和单元测试中使用 “local” 运行 Spark 进程。&lt;/p&gt;
-
-&lt;h4 id=&quot;rdd创建&quot;&gt;RDD创建&lt;/h4&gt;
-&lt;p&gt;  Spark 核心的概念是 Resilient Distributed Dataset (RDD)：一个可并行操作的有容错机制的数据集合。有 2 种方式创建 RDDs：第一种是在你的驱动程序中并行化一个已经存在的集合；另外一种是引用一个外部存储系统的数据集，例如共享的文件系统，HDFS，HBase或其他 Hadoop 数据格式的数据源。&lt;/p&gt;
-&lt;ol&gt;
-  &lt;li&gt;并行集合&lt;br /&gt;
-  并行集合 (Parallelized collections) 的创建是通过在一个已有的集合(Scala Seq)上调用 SparkContext 的 parallelize 方法实现的。集合中的元素被复制到一个可并行操作的分布式数据集中。例如，这里演示了如何在一个包含 1 到 5 的数组中创建并行集合：
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
-2
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;val data = Array(1, 2, 3, 4, 5)
-val distData = sc.parallelize(data)
-&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-    &lt;p&gt;  一旦创建完成，这个分布式数据集(distData)就可以被并行操作。例如，我们可以调用 distData.reduce((a, b) =&amp;gt; a + b) 将这个数组中的元素相加。我们以后再描述在分布式上的一些操作。&lt;br /&gt;
-  并行集合一个很重要的参数是切片数(slices)，表示一个数据集切分的份数。Spark 会在集群上为每一个切片运行一个任务。你可以在集群上为每个 CPU 设置 2-4 个切片(slices)。正常情况下，Spark 会试着基于你的集群状况自动地设置切片的数目。然而，你也可以通过 parallelize 的第二个参数手动地设置(例如：sc.parallelize(data, 10))。&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;外部数据集&lt;br /&gt;
-  Spark 可以从任何一个 Hadoop 支持的存储源创建分布式数据集，包括你的本地文件系统，HDFS，Cassandra，HBase，Amazon S3等。 Spark 支持文本文件(text files)，SequenceFiles 和其他 Hadoop InputFormat。&lt;br /&gt;
-  文本文件 RDDs 可以使用 SparkContext 的 textFile 方法创建。 在这个方法里传入文件的 URI (机器上的本地路径或 hdfs://，s3n:// 等)，然后它会将文件读取成一个行集合。这里是一个调用例子：
-    &lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
-2
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;scala&amp;gt; val distFile = sc.textFile(&quot;data.txt&quot;)
-distFile: RDD[String] = MappedRDD@1d4cee08
-&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
-    &lt;p&gt;  一旦创建完成，distFiile 就能做数据集操作。例如，我们可以用下面的方式使用 map 和 reduce 操作将所有行的长度相加：distFile.map(s =&amp;gt; s.length).reduce((a, b) =&amp;gt; a + b)。&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h4 id=&quot;rdd操作&quot;&gt;RDD操作&lt;/h4&gt;
-&lt;p&gt;  RDDs 支持 2 种类型的操作：转换(transformations) 从已经存在的数据集中创建一个新的数据集；动作(actions) 在数据集上进行计算之后返回一个值到驱动程序。例如，map 是一个转换操作，它将每一个数据集元素传递给一个函数并且返回一个新的 RDD。另一方面，reduce 是一个动作，它使用相同的函数来聚合 RDD 的所有元素，并且将最终的结果返回到驱动程序(不过也有一个并行 reduceByKey 能返回一个分布式数据集)。&lt;br /&gt;
-  在 Spark 中，所有的转换(transformations)都是惰性(lazy)的，它们不会马上计算它们的结果。相反的，它们仅仅记录转换操作是应用到哪些基础数据集(例如一个文件)上的。转换仅仅在这个时候计算：当动作(action) 需要一个结果返回给驱动程序的时候。这个设计能够让 Spark 运行得更加高效。例如，我们可以实现：通过 map 创建一个新数据集在 reduce 中使用，并且仅仅返回 reduce 的结果给 driver，而不是整个大的映射过的数据集。&lt;br /&gt;
-  默认情况下，每一个转换过的 RDD 会在每次执行动作(action)的时候重新计算一次。然而，你也可以使用 persist (或 cache)方法持久化(persist)一个 RDD 到内存中。在这个情况下，Spark 会在集群上保存相关的元素，在你下次查询的时候会变得更快。在这里也同样支持持久化 RDD 到磁盘，或在多个节点间复制。&lt;br /&gt;
-  为了说明 RDD 基本知识，考虑下面的简单程序：&lt;/p&gt;
-&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;rouge-gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
-2
-3
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;rouge-code&quot;&gt;&lt;pre&gt;val lines = sc.textFile(&quot;data.txt&quot;)
-val lineLengths = lines.map(s =&amp;gt; s.length)
-val totalLength = lineLengths.reduce((a, b) =&amp;gt; a + b)
-&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
-&lt;p&gt;  第一行是定义来自于外部文件的 RDD。这个数据集并没有加载到内存或做其他的操作：lines 仅仅是一个指向文件的指针。第二行是定义 lineLengths，它是 map 转换(transformation)的结果。同样，lineLengths 由于懒惰模式也没有立即计算。最后，我们执行 reduce，它是一个动作(action)。在这个地方，Spark 把计算分成多个任务(task)，并且让它们运行在多个机器上。每台机器都运行自己的 map 部分和本地 reduce 部分。然后仅仅将结果返回给驱动程序。&lt;br /&gt;
-  如果我们想要再次使用 lineLengths，我们可以添加：
-&lt;code class=&quot;highlighter-rouge&quot;&gt;lineLengths.persist()&lt;/code&gt;&lt;br /&gt;
-在 reduce 之前，它会导致 lineLengths 在第一次计算完成之后保存到内存中。&lt;/p&gt;
-
-&lt;h4 id=&quot;常见的转换操作&quot;&gt;常见的转换操作&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;filter(func)：筛选出满足函数func的元素，并返回一个新的数据集&lt;/li&gt;
-  &lt;li&gt;map(func)：将每个元素传递到函数func中，并将结果返回为一个新的数据集&lt;/li&gt;
-  &lt;li&gt;flatMap(func)：与map()相似，但每个输入元素都可以映射到0或多个输出结果&lt;/li&gt;
-  &lt;li&gt;groupByKey()：应用于(K,V)键值对的数据集时，返回一个新的(K, Iterable)形式的数据集&lt;/li&gt;
-  &lt;li&gt;reduceByKey(func)：应用于(K,V)键值对的数据集时，返回一个新的(K, V)形式的数据集，其中的每个值是将每个key传递到函数func中进行聚合&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;常见的动作操作&quot;&gt;常见的动作操作&lt;/h4&gt;
-&lt;ul&gt;
-  &lt;li&gt;count() 返回数据集中的元素个数&lt;/li&gt;
-  &lt;li&gt;collect() 以数组的形式返回数据集中的所有元素&lt;/li&gt;
-  &lt;li&gt;first() 返回数据集中的第一个元素&lt;/li&gt;
-  &lt;li&gt;take(n) 以数组的形式返回数据集中的前n个元素&lt;/li&gt;
-  &lt;li&gt;reduce(func) 通过函数func（输入两个参数并返回一个值）聚合数据集中的元素&lt;/li&gt;
-  &lt;li&gt;foreach(func) 将数据集中的每个元素传递到函数func中运行*&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h4 id=&quot;rdd持久化&quot;&gt;RDD持久化&lt;/h4&gt;
-&lt;p&gt;  Spark最重要的一个功能是它可以通过各种操作（operations）持久化（或者缓存）一个集合到内存中。当你持久化一个RDD的时候，每一个节点都将参与计算的所有分区数据存储到内存中，并且这些 数据可以被这个集合（以及这个集合衍生的其他集合）的动作（action）重复利用。这个能力使后续的动作速度更快（通常快10倍以上）。对应迭代算法和快速的交互使用来说，缓存是一个关键的工具。&lt;br /&gt;
-  你能通过persist()或者cache()方法持久化一个rdd。首先，在action中计算得到rdd；然后，将其保存在每个节点的内存中。Spark的缓存是一个容错的技术-如果RDD的任何一个分区丢失，它 可以通过原有的转换（transformations）操作自动的重复计算并且创建出这个分区。&lt;br /&gt;
-  Spark自动的监控每个节点缓存的使用情况，利用最近最少使用原则删除老旧的数据。如果你想手动的删除RDD，可以使用RDD.unpersist()方法&lt;/p&gt;
-</description>
-        <pubDate>Tue, 19 Feb 2019 17:00:00 +0800</pubDate>
-        <link>http://localhost:4000/2019/02/19/spark%E5%88%9D%E6%8E%A2/</link>
-        <guid isPermaLink="true">http://localhost:4000/2019/02/19/spark%E5%88%9D%E6%8E%A2/</guid>
-        
-        <category>学习</category>
-        
-        <category>spark</category>
         
         
       </item>

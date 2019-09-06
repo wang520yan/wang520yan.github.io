@@ -4,7 +4,7 @@ title:      "docker集群管理技术--swarm"
 subtitle:   ""
 date:       2019-02-20 20:30:00
 author:     "yan"
-header-img: "img/post-bg-2019-021.jpg"
+header-img: "img/bg_090603.jpg"
 top-img: "/img/swarm.jpg"
 catalog: true
 tags:

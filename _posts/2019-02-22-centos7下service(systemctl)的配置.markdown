@@ -4,7 +4,7 @@ title:      "centos7下service(systemctl)的配置"
 subtitle:   ""
 date:       2019-02-22 08:30:00
 author:     "yan"
-header-img: "img/post-bg-2019-01.jpg"
+header-img: "img/bg_090602.jpg"
 top-img: "/img/service.jpg"
 catalog: true
 tags:
