@@ -42,6 +42,8 @@ body, html {
 	max-width: 600px;
 	margin: 0 auto;
 	margin-top: -120px;
+	background-color: white;
+	border: #0085a1 2px solid;
 }
 
 .cbp_tmtimeline > li {
@@ -53,14 +55,13 @@ body, html {
 }
 
 /* The date/time */
-.cbp_tmlabel time {
+.cbp_tmlabel h3 {
 	font-size: 1.0em;
-	position: absolute;
+	float: right;
 	top: 0px;
-	line-height: 64px;
 	right: 5px;
 	margin-right: 1em;
-	color: #a5a7aa;
+	color: rgb(78, 78, 78);
 }
 
 /* The Duoshuo */
@@ -69,19 +70,19 @@ body, html {
 }
 
 /* The card */
-.cbp_tmtimeline > li .cbp_tmlabel {
+.cbp_tmlabel {
 	background: white;
 	color: rgb(78, 78, 78);
-	/* line-height: 1.4; */
-	position: relative;
 	border-radius: 3px;
 	border: 1px solid #edeeee;
-	margin: 0 0 30px 0;
 	font-weight: 400;
 	font-size: 95%;
+	margin: auto 30%;
+	
 }
 
-.cbp_tmtimeline > li .cbp_tmlabel h2 {
+.cbp_tmlabel h2 {
+	float: left;
 	font-weight: bold;
 	font-size: 15px;
 	padding: 14px 20px;
@@ -90,10 +91,7 @@ body, html {
 	line-height: 36px;
 }
 
-.cbp_tmtimeline > li:nth-child(odd) .cbp_tmlabel:after {
-	border-right-color: #FFFFFF;
-	display: no;
-}
+
 
 /* The icons */
 .cbp_tmtimeline > li .cbp_tmicon {
@@ -196,7 +194,7 @@ html{
 body{
 	background: #fafafa;
 }
-header{
+/* header{
 	text-align: center;
 	min-width: 100%;
 	padding: 5em 0px;
@@ -222,7 +220,7 @@ header p{
 }
 header img{
 	width: 175px;
-}
+} */
 
 .cbp_tmlabel .hux_ul{
 	border:none;

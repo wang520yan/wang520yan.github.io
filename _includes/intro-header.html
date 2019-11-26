@@ -122,9 +122,43 @@
           <h1>关于我</h1>
           {% endif %}
           {% if page.title == "Portfolio" %}
-          <h1>推荐</h1>
+          <h1>游记</h1>
           {% endif %}
           <!-- <h1>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</h1> -->
+          <span class="subheading">{{ page.description }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+{% endif %}
+
+
+<!-- 照片页的样式 -->
+{% if include.type == 'trip' %}
+<header class="intro-header" style="background-image: url(images/bg_you.jpg);">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        {% if include.short %}
+        <div class="site-heading" id="tag-heading">
+        {% else %}
+        <div class="site-heading">
+        {% endif %}
+        <img width="175" height="175" style="border-radius:50%;" src="/img/avatar-yan.jpg">
+          {% if page.title == "Index" %}
+          <h1>Yan Blog</h1>
+          {% endif %}
+          {% if page.title == "Archive" %}
+          <h1>文章</h1>
+          {% endif %}
+          {% if page.title == "About" %}
+          <h1>关于我</h1>
+          {% endif %}
+          {% if page.title == "Portfolio" %}
+          <h1>游记</h1>
+          {% endif %}
           <span class="subheading">{{ page.description }}</span>
         </div>
       </div>

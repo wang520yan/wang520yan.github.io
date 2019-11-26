@@ -5,6 +5,8 @@ description: "代码编织梦想，程序创造未来"
 ---
 <!-- ceshi-->
 {% for post in paginator.posts %}
+{% if post.is_trip %}
+{% else %}
 <div class="post-preview">
     <div style="width: 150px; height: 150px; float: left;">
         <img src="{{post.top-img}}" style="width: 140px; height: 140px; border-radius:10px; float: left;">
@@ -34,6 +36,7 @@ description: "代码编织梦想，程序创造未来"
     </div>
 </div>
 <hr>
+{% endif %}
 {% endfor %}
 
 <!-- Pager -->
