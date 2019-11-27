@@ -10,23 +10,23 @@ url: "https://wang520yan.github.io/"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
 
-# links1:
-#   - name: 所有
-#     url: /
-#     type: recent
-#     extenal: false
-#   - name: 随笔
-#     url: /title
-#     type: title
-#     extenal: false
-#   - name: 学习
-#     url: /study
-#     type: study
-#     extenal: false
-#
-# blog_1: recent
-# blog_2: title
-# blog_3: study
+links1:
+  - name: 所有
+    url: /
+    type: recent
+    extenal: false
+  - name: 游记
+    url: /blog/trip
+    type: trip
+    extenal: false
+  - name: 学习
+    url: /blog/study
+    type: study
+    extenal: false
+
+blog_1: recent
+blog_2: trip
+blog_3: study
 
 
 

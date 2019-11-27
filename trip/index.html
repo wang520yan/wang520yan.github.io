@@ -1,0 +1,28 @@
+---
+layout: picture
+title: trip
+description: "身体和灵魂总有一个在路上"
+header-img: "img/bg_you.jpg"
+---
+
+{% for post in site.posts %}
+{% if post.trip %}
+<div class="cbp_tmlabel">
+		<a href="{{ post.url | prepend: site.baseurl }}">
+		<h2 id="boxoffice">{{post.title}}</h2>
+		<h3>{{post.time}}</h3>
+		<img src="{{post.top-img}}" style="height: 360px; width:600px;"/>
+		</a>
+		<ul>
+			<li>
+				{{post.subtitle}}
+			</li>
+			<li class="skill">
+				<span class="link"><a target="_blank" href="{{ post.url | prepend: site.baseurl }}">go</a></span>
+			</li>
+		</ul>
+	</div>
+</div>
+<hr>
+{% endif %}
+{% endfor %}

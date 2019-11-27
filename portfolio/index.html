@@ -6,7 +6,7 @@ header-img: "img/bg_you.jpg"
 ---
 
 {% for post in site.posts %}
-{% if post.is_trip %}
+{% if post.trip %}
 <div class="cbp_tmlabel">
 		<a href="{{ post.url | prepend: site.baseurl }}">
 		<h2 id="boxoffice">{{post.title}}</h2>

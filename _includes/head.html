@@ -32,6 +32,32 @@
 
     <title>{% if page.title %}{{ page.title }} - {{ site.SEOTitle }}{% else %}{{ site.SEOTitle }}{% endif %}</title>
 
+    {% for link in site.links1 %}
+        {% assign count = 0 %}
+        {% if link.type == site.blog_1 %}
+            {% for post in site.posts %}
+                {% assign count = count | plus:1 %}
+            {% endfor %}
+        {% endif %}
+
+        {% if link.type == site.blog_2 %}
+            {% for post in site.posts %}
+                {% if post.trip %}
+                    {% assign count = count | plus:1 %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+        {% if link.type == site.blog_3 %}
+            {% for post in site.posts %}
+                {% if post.study %}
+                    {% assign count = count | plus:1 %}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+
+    {% endfor %}
+
     <!-- Web App Manifest -->
     <link rel="manifest" href="{{ site.baseurl }}/pwa/manifest.json">
 
