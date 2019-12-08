@@ -66,6 +66,8 @@ body, html {
 
 .cbp_tmlabel img {
 	margin-top: 1%;
+	padding: 2%;
+	border-radius: 5%;
 }
 
 /* The Duoshuo */
