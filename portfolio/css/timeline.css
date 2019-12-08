@@ -64,6 +64,10 @@ body, html {
 	color: rgb(78, 78, 78);
 }
 
+.cbp_tmlabel img {
+	margin-top: 5px;
+}
+
 /* The Duoshuo */
 .cbp_tmlabel .comment{
 	padding: 0 1.5em 0.5em;
