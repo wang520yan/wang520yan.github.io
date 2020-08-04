@@ -1,0 +1,262 @@
+---
+layout:     post
+title:      "ML3--主成分分析（PCA）"
+subtitle:   "机器学习第三课"
+date:       2020-05-12 00:18:00
+author:     "yan"
+header-img: "img/image_back_02.jpg"
+top-img: "/img/202005/0512001.png"
+catalog: true
+tags:
+    - 机器学习
+---
+# PCA介绍
+PCA是无监督数据降维方式，目的是将一个高维数据集转换为一个低维数据集。如今我们的数据集往往有成百上千维的特征，但并不是所有的特征都很重要，通过降维，去除那些不重要的特征。数据维度的降低了，同时计算机的运算效率也得到了提升。在人工智能技术刚起步的时候，人们关注的焦点在于算法的准确性，通过不断优化算法中的计算参数，来提高运算结果的准确率。今天，随着存储与通信技术的发展，数据规模变得空前的庞大，所以运算效率变成了我们不得不考虑的问题。
+整个过程我们采用的是Python的Numpy库（线性代数中的矩阵计算）来进行的，整个过程如下：
+1.数据的标准化处理 - 去均值
+2.计算协方差矩阵
+3.计算特征向量与特征值
+4.根据特征值的大小，选择前k个特征向量组成一个新的特征矩阵
+5.原始数据与新的特征矩阵相乘
+
+# scikit-learn PCA类介绍
+&emsp;&emsp;在scikit-learn中，与PCA相关的类都在sklearn.decomposition包中。最常用的PCA类就是sklearn.decomposition.PCA，我们下面主要也会讲解基于这个类的使用的方法。
+```
+sklearn.decomposition.PCA(n_components=None, 
+copy=True, whiten=False, svd_solver=’auto’,
+ tol=0.0, iterated_power=’auto’, random_state=None)
+```
+
+&emsp;&emsp;除了PCA类以外，最常用的PCA相关类还有KernelPCA类，在原理篇我们也讲到了，它主要用于非线性数据的降维，需要用到核技巧。因此在使用的时候需要选择合适的核函数并对核函数的参数进行调参。
+
+&emsp;&emsp;另外一个常用的PCA相关类是IncrementalPCA类，它主要是为了解决单机内存限制的。有时候我们的样本量可能是上百万+，维度可能也是上千，直接去拟合数据可能会让内存爆掉， 此时我们可以用IncrementalPCA类来解决这个问题。IncrementalPCA先将数据分成多个batch，然后对每个batch依次递增调用partial_fit函数，这样一步步的得到最终的样本最优降维。
+
+&emsp;&emsp;此外还有SparsePCA和MiniBatchSparsePCA。他们和上面讲到的PCA类的区别主要是使用了L1的正则化，这样可以将很多非主要成分的影响度降为0，这样在PCA降维的时候我们仅仅需要对那些相对比较主要的成分进行PCA降维，避免了一些噪声之类的因素对我们PCA降维的影响。SparsePCA和MiniBatchSparsePCA之间的区别则是MiniBatchSparsePCA通过使用一部分样本特征和给定的迭代次数来进行PCA降维，以解决在大样本时特征分解过慢的问题，当然，代价就是PCA降维的精确度可能会降低。使用SparsePCA和MiniBatchSparsePCA需要对L1正则化参数进行调参。
+
+# sklearn.decomposition.PCA参数介绍
+&emsp;&emsp;下面我们主要基于sklearn.decomposition.PCA来讲解如何使用scikit-learn进行PCA降维。PCA类基本不需要调参，一般来说，我们只需要指定我们需要降维到的维度，或者我们希望降维后的主成分的方差和占原始维度所有特征方差和的比例阈值就可以了。
+
+&emsp;&emsp;现在我们对sklearn.decomposition.PCA的主要参数做一个介绍：
+
+&emsp;&emsp;1）n_components：这个参数可以帮我们指定希望PCA降维后的特征维度数目。最常用的做法是直接指定降维到的维度数目，此时n_components是一个大于等于1的整数。当然，我们也可以指定主成分的方差和所占的最小比例阈值，让PCA类自己去根据样本特征方差来决定降维到的维度数，此时n_components是一个（0，1]之间的数。当然，我们还可以将参数设置为"mle", 此时PCA类会用MLE算法根据特征的方差分布情况自己去选择一定数量的主成分特征来降维。我们也可以用默认值，即不输入n_components，此时n_components=min(样本数，特征数)。
+
+&emsp;&emsp;2）whiten ：判断是否进行白化。所谓白化，就是对降维后的数据的每个特征进行归一化，让方差都为1.对于PCA降维本身来说，一般不需要白化。如果你PCA降维后有后续的数据处理动作，可以考虑白化。默认值是False，即不进行白化。
+
+&emsp;&emsp;3）svd_solver：即指定奇异值分解SVD的方法，由于特征分解是奇异值分解SVD的一个特例，一般的PCA库都是基于SVD实现的。有4个可以选择的值：{‘auto’, ‘full’, ‘arpack’, ‘randomized’}。randomized一般适用于数据量大，数据维度多同时主成分数目比例又较低的PCA降维，它使用了一些加快SVD的随机算法。 full则是传统意义上的SVD，使用了scipy库对应的实现。arpack和randomized的适用场景类似，区别是randomized使用的是scikit-learn自己的SVD实现，而arpack直接使用了scipy库的sparse SVD实现。默认是auto，即PCA类会自己去在前面讲到的三种算法里面去权衡，选择一个合适的SVD算法来降维。一般来说，使用默认值就够了。
+
+&emsp;&emsp;除了这些输入参数外，有两个PCA类的成员值得关注。第一个是explained_variance_，它代表降维后的各主成分的方差值。方差值越大，则说明越是重要的主成分。第二个是explained_variance_ratio_，它代表降维后的各主成分的方差值占总方差值的比例，这个比例越大，则越是重要的主成分。
+* components_：特征变换空间（特征矩阵），根据我们指定的n_components = k的值，选择方差最大的k个值所对应的的特征向量组成的特征矩阵。
+* explained_variance_：n_components所对应的的方差。
+* explained_variance_ratio_：不同特征方差的占比。
+* singular_values_ :特征值，与前面的特征向量conponents_是一一对应的。
+
+# PCA实例1
+&emsp;&emsp;下面我们用一个实例来学习下scikit-learn中的PCA类使用。为了方便的可视化让大家有一个直观的认识，我们这里使用了三维的数据来降维。
+
+完整代码参见我的github: https://github.com/ljpzzz/machinelearning/blob/master/classic-machine-learning/pca.ipynb
+
+&emsp;&emsp;首先我们生成随机数据并可视化，代码如下：
+
+```
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+%matplotlib inline
+from sklearn.datasets.samples_generator import make_blobs
+# X为样本特征，Y为样本簇类别， 共1000个样本，每个样本3个特征，共4个簇
+X, y = make_blobs(n_samples=10000, n_features=3, centers=[[3,3, 3], [0,0,0], [1,1,1], [2,2,2]], cluster_std=[0.2, 0.1, 0.2, 0.2], random_state =9)
+fig = plt.figure()
+ax = Axes3D(fig, rect=[0, 0, 1, 1], elev=30, azim=20)
+plt.scatter(X[:, 0], X[:, 1], X[:, 2],marker='o')
+```
+
+&emsp;&emsp;三维数据的分布图如下：
+<div align="center"> <img src="/img/202005/0512002.png"/> </div><br>
+
+&emsp;&emsp;我们先不降维，只对数据进行投影，看看投影后的三个维度的方差分布，代码如下：
+```
+from sklearn.decomposition import PCA
+pca = PCA(n_components=3)
+pca.fit(X)
+print pca.explained_variance_ratio_
+print pca.explained_variance_
+```
+输出如下：
+
+[ 0.98318212  0.00850037  0.00831751]
+[ 3.78483785  0.03272285  0.03201892]
+
+&emsp;&emsp;可以看出投影后三个特征维度的方差比例大约为98.3%：0.8%：0.8%。投影后第一个特征占了绝大多数的主成分比例。
+
+&emsp;&emsp;现在我们来进行降维，从三维降到2维，代码如下：
+```   
+pca = PCA(n_components=2)
+pca.fit(X)
+print pca.explained_variance_ratio_
+print pca.explained_variance_
+```  
+ 　
+输出如下：   
+
+[ 0.98318212  0.00850037]
+[ 3.78483785  0.03272285]
+
+&emsp;&emsp;这个结果其实可以预料，因为上面三个投影后的特征维度的方差分别为：[ 3.78483785  0.03272285  0.03201892]，投影到二维后选择的肯定是前两个特征，而抛弃第三个特征。
+
+&emsp;&emsp;为了有个直观的认识，我们看看此时转化后的数据分布，代码如下：   
+```
+X_new = pca.transform(X)
+plt.scatter(X_new[:, 0], X_new[:, 1],marker='o')
+plt.show()
+```
+输出的图如下：
+
+<div align="center"> <img src="/img/202005/0512003.png"/> </div><br>
+&emsp;&emsp;可见降维后的数据依然可以很清楚的看到我们之前三维图中的4个簇。
+
+&emsp;&emsp;现在我们看看不直接指定降维的维度，而指定降维后的主成分方差和比例。
+```
+pca = PCA(n_components=0.95)
+pca.fit(X)
+print pca.explained_variance_ratio_
+print pca.explained_variance_
+print pca.n_components_
+```
+&emsp;&emsp;我们指定了主成分至少占95%，输出如下：
+
+[ 0.98318212]
+[ 3.78483785]
+1
+&emsp;&emsp;可见只有第一个投影特征被保留。这也很好理解，我们的第一个主成分占投影特征的方差比例高达98%。只选择这一个特征维度便可以满足95%的阈值。我们现在选择阈值99%看看，代码如下：
+```
+pca = PCA(n_components=0.99)
+pca.fit(X)
+print pca.explained_variance_ratio_
+print pca.explained_variance_
+print pca.n_components_
+```
+此时的输出如下：
+
+[ 0.98318212  0.00850037]
+[ 3.78483785  0.03272285]
+2
+&emsp;&emsp;这个结果也很好理解，因为我们第一个主成分占了98.3%的方差比例，第二个主成分占了0.8%的方差比例，两者一起可以满足我们的阈值。
+
+&emsp;&emsp;最后我们看看让MLE算法自己选择降维维度的效果，代码如下：
+```
+pca = PCA(n_components='mle')
+pca.fit(X)
+print pca.explained_variance_ratio_
+print pca.explained_variance_
+print pca.n_components_
+```
+输出结果如下：
+
+[ 0.98318212]
+[ 3.78483785]
+1
+
+&emsp;&emsp;可见由于我们的数据的第一个投影特征的方差占比高达98.3%，MLE算法只保留了我们的第一个特征。
+
+# PCA实例2
+&emsp;&emsp;我们使用sklearn自带的数据集boston（波士顿地区房价数据集），该数据集有506个样本，13个特征，像房屋面积，区位，卧室数量等等以及价格（标签值）。pca是一种无监督降维算法，所以我们不使用价格数据。下面是pca的代码实现过程：
+```
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn import datasets
+
+boston_house_price = datasets.load_boston()#导入boston房价数据集
+X = boston_house_price .data#获取特征数据
+#第一步，对数据进行标准化处理
+X_std = StandardScaler().fit_transform(X)
+#实例化PCA
+pca = PCA(n_components = 3)
+#训练数据
+pca.fit(X_std)
+
+#使用PCA的属性查看特征值
+pca.singular_values_
+array([55.6793095 , 26.93022859, 25.07516773])
+#使用PCA的属性查看特征值对应的特征向量
+pca.components_
+array([[ 0.2509514 , -0.25631454,  0.34667207,  0.00504243,  0.34285231,
+        -0.18924257,  0.3136706 , -0.32154387,  0.31979277,  0.33846915,
+         0.20494226, -0.20297261,  0.30975984],
+       [-0.31525237, -0.3233129 ,  0.11249291,  0.45482914,  0.21911553,
+         0.14933154,  0.31197778, -0.34907   , -0.27152094, -0.23945365,
+        -0.30589695,  0.23855944, -0.07432203],
+       [ 0.24656649,  0.29585782, -0.01594592,  0.28978082,  0.12096411,
+         0.59396117, -0.01767481, -0.04973627,  0.28725483,  0.22074447,
+        -0.32344627, -0.3001459 , -0.26700025]])
+#对原始的数据集进行转换
+new_data = X.dot(pca.components_.T)
+print(new_data[:10])#打印出转换后的前十行数据做一个观察
+array([[ 38.89018107,  32.93532391, -51.87396066],
+       [ 33.02343232,  54.79866941, -71.20799688],
+       [ 26.53873512,  48.76840918, -67.85363879],
+       [ 12.75698667,  47.78351826, -72.33882223],
+       [ 15.65240562,  50.77871883, -73.70920814],
+       [ 17.71686561,  51.4336294 , -73.35783472],
+       [ 51.22331968,  29.63835929, -51.11003359],
+       [ 62.1527616 ,  38.52240664, -53.72636333],
+       [ 68.87661773,  36.34017288, -53.90249412],
+       [ 60.21849172,  32.80458593, -50.06565433]])
+#此时的数据，我们就不知道它具体代表的什么含义了
+```
+# 图形化PCA降维前后的数据对比
+&emsp;&emsp;我们用sklearn中iris花数据集来举例，该数据集有四个特征，花萼长度、花萼宽度、花瓣长度、花瓣宽度，下面是画图过程的代码实现。
+<div align="center"> <img src="/img/202005/0512004.png"/> </div><br>
+```
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from sklearn import datasets
+from sklearn.decomposition import PCA
+
+# import some data to play with
+iris = datasets.load_iris()
+X = iris.data[:, :2]  # we only take the first two features.
+y = iris.target
+
+x_min, x_max = X[:, 0].min() - .5, X[:, 0].max() + .5
+y_min, y_max = X[:, 1].min() - .5, X[:, 1].max() + .5
+
+plt.figure(2, figsize=(8, 6))
+plt.clf()
+
+# Plot the training points
+plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.Set1,
+            edgecolor='k')
+plt.xlabel('Sepal length')
+plt.ylabel('Sepal width')
+
+plt.xlim(x_min, x_max)
+plt.ylim(y_min, y_max)
+plt.xticks(())
+plt.yticks(())
+
+# To getter a better understanding of interaction of the dimensions
+# plot the first three PCA dimensions
+fig = plt.figure(1, figsize=(8, 6))
+ax = Axes3D(fig, elev=-150, azim=110)
+X_reduced = PCA(n_components=3).fit_transform(iris.data)
+ax.scatter(X_reduced[:, 0], X_reduced[:, 1], X_reduced[:, 2], c=y,
+           cmap=plt.cm.Set1, edgecolor='k', s=40)
+ax.set_title("First three PCA directions")
+ax.set_xlabel("1st eigenvector")
+ax.w_xaxis.set_ticklabels([])
+ax.set_ylabel("2nd eigenvector")
+ax.w_yaxis.set_ticklabels([])
+ax.set_zlabel("3rd eigenvector")
+ax.w_zaxis.set_ticklabels([])
+
+plt.show()
+```
+&emsp;&emsp;降维前，我们选取了iris数据集中的两个特征sepal length（花萼长度）和sepal width（花萼宽度）来绘制数据分布，由图可以看出，数据集中有三种花，但是三者相互混杂，难以区分清楚。
+<div align="center"> <img src="/img/202005/0512005.png"/> </div><br>
+&emsp;&emsp;iris数据集本有4个特征，这时我们采用pca算法，将4维数据变化为3维。从图中的结果可以看出，经过变换后，三种类别区分的更加清楚了。
+<div align="center"> <img src="/img/202005/0512006.png"/> </div><br>
+
+# PCA降维小结
+&emsp;&emsp;1.实现过程有两种：Python的Numpy库；SKlearn的PCA模块，两者的计算结果是相同的。
+&emsp;&emsp;2.数据降维的结果不一定都是好的，所以在解决实际问题，要同时计算降维前与降维后的结果，进行比较。
+&emsp;&emsp;3.降维后的数据是不可解释的，但不影响最终的计算结果。

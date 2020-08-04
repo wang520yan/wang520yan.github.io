@@ -171,6 +171,14 @@
                     </li>
                     
                     
+                    
+                    <li>
+                        
+                        
+                        
+                    </li>
+                    
+                    
                 </ul>
             </div>
         </div>
@@ -305,6 +313,363 @@
 
 <div class="post-preview">
     <div style="width: 150px; height: 150px; float: left;">
+        <img src="/img/crontab.jpg" style="width: 140px; height: 140px; border-radius:10px; float: left;">
+    </div>
+    <div style="height: 140px;padding-left:3%;">
+      <a href="/2019/02/19/linux%E5%AE%9A%E6%97%B6%E4%BB%BB%E5%8A%A1crontab/">
+          <h2 class="post-title">
+              linux定时任务crontab
+          </h2>
+      </a>
+
+      <!-- 
+      <h4 class="post-subtitle">
+          
+      </h4>
+       -->
+      <div class="post-content-preview" style="font-size:14px;height: 65px;overflow: hidden;">
+          定时任务
+
+  系统任务调度
+系统周期性所要执行的工作，在/etc下的一个crontab文件，就是系统任务调度的配置文件。
+  用户任务调度
+用户定期要执行的工作，所有用户定义的crontab文件都保存在/var/spool/cron目录下，其文件名与用户名一致。
+  crontab安装
+yum install crontabs
+启动：
+/sbin/service crond start|s...
+      </div>
+      <div style="margin-top: -25px;">
+          <p class="post-meta">
+              Posted by yan on February 19, 2019
+          </p>
+      </div>
+
+
+    </div>
+</div>
+<hr>
+
+
+
+<div class="post-preview">
+    <div style="width: 150px; height: 150px; float: left;">
+        <img src="/img/s1.jpg" style="width: 140px; height: 140px; border-radius:10px; float: left;">
+    </div>
+    <div style="height: 140px;padding-left:3%;">
+      <a href="/2019/02/19/%E5%A4%A7%E7%99%BD%E8%8F%9CU%E7%9B%98%E5%90%AF%E5%8A%A8%E7%9B%98/">
+          <h2 class="post-title">
+              大白菜U盘启动盘
+          </h2>
+      </a>
+
+      <!-- 
+      <h4 class="post-subtitle">
+          
+      </h4>
+       -->
+      <div class="post-content-preview" style="font-size:14px;height: 65px;overflow: hidden;">
+          制作启动盘
+
+  下载大白菜装机版（http://www.winbaicai.com/）
+  选择‘默认模式’， 模式选择”USB-HDD”,格式选择”NTFS”。
+  “一键制作成USB启动盘”
+  弹框选择”是”，格式化U盘。
+  模拟运行。
+也可以使用光盘制作光盘启动盘，效果与u盘启动盘一样
+
+
+使用启动盘
+
+  重启电脑按键按下后按下快捷键，进入BIOS页面，进入优先级启动选项设置界...
+      </div>
+      <div style="margin-top: -25px;">
+          <p class="post-meta">
+              Posted by yan on February 19, 2019
+          </p>
+      </div>
+
+
+    </div>
+</div>
+<hr>
+
+
+
+<div class="post-preview">
+    <div style="width: 150px; height: 150px; float: left;">
+        <img src="/img/s2.jpg" style="width: 140px; height: 140px; border-radius:10px; float: left;">
+    </div>
+    <div style="height: 140px;padding-left:3%;">
+      <a href="/2019/02/18/NTP%E6%97%B6%E9%97%B4%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+          <h2 class="post-title">
+              NTP时间服务器搭建与使用
+          </h2>
+      </a>
+
+      <!-- 
+      <h4 class="post-subtitle">
+          
+      </h4>
+       -->
+      <div class="post-content-preview" style="font-size:14px;height: 65px;overflow: hidden;">
+          NTP介绍
+NTP（network time protocol)网络时间协议，把计算机的时钟同步到世界协调时UTC，精度极其高，利用NTP协议提供时间同步服务。
+rpm -qa ntp –&gt;  查看本机ntp软件包
+服务端安装
+
+  删除本地时区配置
+    1
+2
+3
+4
+rm -rf /etc/localtime
+ln -s /usr/share/zoneinfo/Asia/sha...
+      </div>
+      <div style="margin-top: -25px;">
+          <p class="post-meta">
+              Posted by yan on February 18, 2019
+          </p>
+      </div>
+
+
+    </div>
+</div>
+<hr>
+
+
+
+<div class="post-preview">
+    <div style="width: 150px; height: 150px; float: left;">
+        <img src="/img/sso.jpg" style="width: 140px; height: 140px; border-radius:10px; float: left;">
+    </div>
+    <div style="height: 140px;padding-left:3%;">
+      <a href="/2019/02/18/SSO%E5%8D%95%E7%82%B9%E7%99%BB%E5%BD%95%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90/">
+          <h2 class="post-title">
+              SSO单点登录需求分析
+          </h2>
+      </a>
+
+      <!-- 
+      <h4 class="post-subtitle">
+          
+      </h4>
+       -->
+      <div class="post-content-preview" style="font-size:14px;height: 65px;overflow: hidden;">
+          服务端需求：
+
+  核心功能需求：
+    
+      用户授权认证界面及认证服务
+      用户令牌生成，传递，验证服务
+      单点退出需求
+    
+  
+  易用性需求：
+    
+      业务系统的统一配置管理（注册服务）
+      集中的访问入口界面
+      记住密码、账号功能
+      自动登录功能 
+    
+  
+  可扩展性需求：
+    
+     ...
+      </div>
+      <div style="margin-top: -25px;">
+          <p class="post-meta">
+              Posted by yan on February 18, 2019
+          </p>
+      </div>
+
+
+    </div>
+</div>
+<hr>
+
+
+
+<div class="post-preview">
+    <div style="width: 150px; height: 150px; float: left;">
+        <img src="/img/s3.jpg" style="width: 140px; height: 140px; border-radius:10px; float: left;">
+    </div>
+    <div style="height: 140px;padding-left:3%;">
+      <a href="/2019/02/18/centos%E5%AE%89%E8%A3%85docker%E5%8F%8Adocker%E7%9A%84%E4%BD%BF%E7%94%A8/">
+          <h2 class="post-title">
+              centos安装docker及docker的使用
+          </h2>
+      </a>
+
+      <!-- 
+      <h4 class="post-subtitle">
+          
+      </h4>
+       -->
+      <div class="post-content-preview" style="font-size:14px;height: 65px;overflow: hidden;">
+          安装
+
+  centos6
+  yum install http://mirrors.yun-idc.com/epel/6/i386/epel-release-6-8.normal.rpm\
+  yum install docker-io
+  centos7
+  yum install docker
+
+
+设置docker服务开机自启
+service docker start » 启动
+chk...
+      </div>
+      <div style="margin-top: -25px;">
+          <p class="post-meta">
+              Posted by yan on February 18, 2019
+          </p>
+      </div>
+
+
+    </div>
+</div>
+<hr>
+
+
+
+<div class="post-preview">
+    <div style="width: 150px; height: 150px; float: left;">
+        <img src="/img/exten.jpg" style="width: 140px; height: 140px; border-radius:10px; float: left;">
+    </div>
+    <div style="height: 140px;padding-left:3%;">
+      <a href="/2019/02/18/centos7%E4%B8%8B%E5%AE%89%E8%A3%85python%E6%89%A9%E5%B1%95%E5%8C%85%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7pip/">
+          <h2 class="post-title">
+              centos7下安装python扩展包管理工具pip
+          </h2>
+      </a>
+
+      <!-- 
+      <h4 class="post-subtitle">
+          centos7环境下进行python扩展包管理工具的安装及使用
+      </h4>
+       -->
+      <div class="post-content-preview" style="font-size:14px;height: 65px;overflow: hidden;">
+          安装pip
+
+  首先安装epel扩展源
+yum -y install epel-release
+  更新成功之后，安装pip
+yum -y install python-pip
+  安装后清除cache
+yum clean all
+  安装失败之后可执行
+pip install --upgrade pip
+
+
+安装python开发环境
+1
+2
+3
+4
+5
+yum install pytho...
+      </div>
+      <div style="margin-top: -25px;">
+          <p class="post-meta">
+              Posted by yan on February 18, 2019
+          </p>
+      </div>
+
+
+    </div>
+</div>
+<hr>
+
+
+
+<div class="post-preview">
+    <div style="width: 150px; height: 150px; float: left;">
+        <img src="/img/ips.jpg" style="width: 140px; height: 140px; border-radius:10px; float: left;">
+    </div>
+    <div style="height: 140px;padding-left:3%;">
+      <a href="/2019/02/18/linux%E9%9D%99%E6%80%81ip%E9%85%8D%E7%BD%AE/">
+          <h2 class="post-title">
+              linux静态ip配置
+          </h2>
+      </a>
+
+      <!-- 
+      <h4 class="post-subtitle">
+          在linux服务器上配置静态ip
+      </h4>
+       -->
+      <div class="post-content-preview" style="font-size:14px;height: 65px;overflow: hidden;">
+          
+  使用命令ifconfig查看网卡名字，默认服务器网卡名为ifcfg-enth0。
+  在/etc/sysconfig/network-scripts目录下，找到与网卡名字相同的文件。
+  修改该配置文件，修改内容如下：
+    1
+2
+3
+4
+5
+IPADDR = 192.168.177.11
+NETMASK = 255.255.255.0
+GATEWAY = 192.168.177....
+      </div>
+      <div style="margin-top: -25px;">
+          <p class="post-meta">
+              Posted by yan on February 18, 2019
+          </p>
+      </div>
+
+
+    </div>
+</div>
+<hr>
+
+
+
+<div class="post-preview">
+    <div style="width: 150px; height: 150px; float: left;">
+        <img src="/img/start.jpg" style="width: 140px; height: 140px; border-radius:10px; float: left;">
+    </div>
+    <div style="height: 140px;padding-left:3%;">
+      <a href="/2019/02/17/docker%E5%AE%B9%E5%99%A8%E5%BC%80%E6%9C%BA%E8%87%AA%E5%90%AF/">
+          <h2 class="post-title">
+              docker容器开机自启
+          </h2>
+      </a>
+
+      <!-- 
+      <h4 class="post-subtitle">
+          
+      </h4>
+       -->
+      <div class="post-content-preview" style="font-size:14px;height: 65px;overflow: hidden;">
+          docker服务开机自启
+chkconfig docker on
+docker容器开机自启
+vi /etc/rc.local
+在文件最后加上需要启动的容器：
+docker start test
+在centos7中要在前面加上 systemctl start docker
+设置执行权限
+chmod +x /etc/rc.local
+chmod +x /etc/rc.d/rc.local
+
+      </div>
+      <div style="margin-top: -25px;">
+          <p class="post-meta">
+              Posted by yan on February 17, 2019
+          </p>
+      </div>
+
+
+    </div>
+</div>
+<hr>
+
+
+
+<div class="post-preview">
+    <div style="width: 150px; height: 150px; float: left;">
         <img src="/img/uwsgi.jpg" style="width: 140px; height: 140px; border-radius:10px; float: left;">
     </div>
     <div style="height: 140px;padding-left:3%;">
@@ -386,9 +751,6 @@ def application(env, st...
 
 
 
-
-
-
 <!-- Pager -->
 
 <ul class="pager">
@@ -397,6 +759,10 @@ def application(env, st...
         <a href="/page3">&larr; Newer Posts</a>
     </li>
     
+    
+    <li class="next">
+        <a href="/page5">Older Posts &rarr;</a>
+    </li>
     
 </ul>
 
@@ -425,37 +791,42 @@ def application(env, st...
         </a>
         
         
-                <a data-sort="0007"
+                <a data-sort="0015"
                     href="/archive/?tag=%E5%AD%A6%E4%B9%A0"
                     title="学习"
                     rel="26">学习</a>
         
-                <a data-sort="0027"
+                <a data-sort="0035"
+                    href="/archive/?tag=%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0"
+                    title="机器学习"
+                    rel="6">机器学习</a>
+        
+                <a data-sort="0035"
                     href="/archive/?tag=python"
                     title="python"
                     rel="6">python</a>
         
-                <a data-sort="0028"
+                <a data-sort="0036"
                     href="/archive/?tag=%E7%BD%91%E7%BB%9C"
                     title="网络"
                     rel="5">网络</a>
         
-                <a data-sort="0028"
+                <a data-sort="0036"
                     href="/archive/?tag=centos7"
                     title="centos7"
                     rel="5">centos7</a>
         
-                <a data-sort="0028"
+                <a data-sort="0036"
                     href="/archive/?tag=docker"
                     title="docker"
                     rel="5">docker</a>
         
-                <a data-sort="0029"
+                <a data-sort="0037"
                     href="/archive/?tag=linux"
                     title="linux"
                     rel="4">linux</a>
         
-                <a data-sort="0031"
+                <a data-sort="0039"
                     href="/archive/?tag=%E8%B8%8F%E6%98%A5"
                     title="踏春"
                     rel="2">踏春
@@ -644,7 +1015,7 @@ def application(env, st...
 </ul>
 
                 <p class="copyright text-muted">
-                    Copyright &copy; Yan Blog 2019
+                    Copyright &copy; Yan Blog 2020
                     <br>
                     Powered by <a href="https://wang520yan.github.io/">Yan Blog</a> |
                     <iframe

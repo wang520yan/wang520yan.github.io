@@ -1,0 +1,25 @@
+---
+layout:     post
+title:      "木渎古镇"
+subtitle:   "江南小镇，小桥流水人家。"
+date:       2020-05-07 10:10:00
+time:       '2020.05.07'
+author:     "yan"
+header-img: "img/image_2020050701.jpg"
+top-img: "/img/image_2020050701.jpg"
+catalog: true
+is_trip: true
+trip: true
+tags:
+    - 苏州
+---
+&emsp;&emsp;木渎古镇，别名渎川，胥江，雅称香溪，位于江苏省东南部，苏州古城西部，地处太湖流域，是江南著名的风景名胜区，素有“吴中第一镇”、“秀绝冠江南”之誉。木渎古镇是与苏州城同龄的汉族水乡文化古镇，已有2500多年历史。2008年08月，评为国家级AAAA景区，也是太湖风景区十三个景区之一。  
+&emsp;&emsp;木渎是汉族传统手工艺品之乡。历史上有泥塑名家袁遇昌、银器高手朱碧山、琢玉名家陆子冈、绣圣沈寿等名家高手，他们的作品都是国家级收藏的珍品。有严家花园、虹饮山房、古松园、灵岩山、天平山等著名文物景点。
+<img src="/img/image_2020050701.jpg">
+<img src="/img/image_20200507004.jpg">
+<img src="/img/image_20200507001.jpg">
+<img src="/img/image_20200507005.jpg">
+<img src="/img/image_20200507002.jpg">
+<img src="/img/image_20200507006.jpg">
+<img src="/img/image_20200507003.jpg">
+

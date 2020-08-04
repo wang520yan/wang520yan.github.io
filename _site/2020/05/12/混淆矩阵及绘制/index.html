@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="代码编织梦想，程序创造未来">
+    <meta name="keywords"  content="彦，程序员">
+    <meta name="theme-color" content="#000000">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="ML2--混淆矩阵及绘制 - Yan Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="混淆矩阵（confusion matrix）
+  混淆矩阵也称误差矩阵，是表示精度评价的一种标准格式，用n行n列的矩阵形式来表示。具体评价指标有总体精度、制图精度、用户精度等，这些精度指标从不同的侧面反映了图像分类的精度。在人工智能中，混淆矩阵（confusion matrix）是可视化工具，特别用于监督学习，在无监督学习一般叫做匹配矩阵。矩阵的每一行表示预测类中的实例，而每一列表示实际类中...">
+    
+    <meta property="article:published_time" content="2020-05-12T08:10:00Z">
+    
+    
+    <meta property="article:author" content="yan">
+    
+    
+    <meta property="article:tag" content="机器学习">
+    
+    
+    <meta property="og:image" content="http://localhost:4000/img/avatar-yan1.jpg">
+    <meta property="og:url" content="http://localhost:4000/2020/05/12/%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5%E5%8F%8A%E7%BB%98%E5%88%B6/">
+    <meta property="og:site_name" content="Yan Blog">
+
+    <title>ML2--混淆矩阵及绘制 - Yan Blog</title>
+
+    
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="http://localhost:4000/2020/05/12/%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5%E5%8F%8A%E7%BB%98%E5%88%B6/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+    <link rel="stylesheet" href="/portfolio/css/timeline.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+      <!-- 打算设置logo，暂时放弃 -->
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <!-- <img src="img/logo.png" alt="" style="position: 'absolute'; width : 500px;"> -->
+            <a class="navbar-brand" href="/" style="color: #08d0f7fc">Yan</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/"><h4 style="color: #08d0f7fc">主页</h4></a>
+                    </li>
+                    
+                    
+                    
+                    
+                    <li>
+                        
+                        
+                        
+                        <a href="/about/"><h4 style="color: #08d0f7fc">关于</h4></a>
+                        
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        
+                        <a href="/archive/"><h4 style="color: #08d0f7fc">文章</h4></a>
+                        
+                        
+                        
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    <li>
+                        
+                        
+                        
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        
+                        
+                        
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        
+                        
+                        <a href="/portfolio/"><h4 style="color: #08d0f7fc">游记</h4></a>
+                        
+                        
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        
+                        
+                        
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    <li>
+                        
+                        
+                        
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        
+                        
+                        
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        
+                        
+                        
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        
+                        
+                        
+                    </li>
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+
+
+
+    // Bind Event
+    // $toggle.addEventListener('click', function(e){
+    //     if ($navbar.className.indexOf('in') > 0) {
+    //         __HuxNav__.close()
+    //     }else{
+    //         __HuxNav__.open()
+    //     }
+    // })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from
+     * $toggle/$collapse will break global delegation.
+     *
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+
+    // place1.addEventListener('mouseenter', function () {
+    //   var ob = document.getElementById("palce3");
+    //   ob.setAttribute("class","bak");
+    // })
+
+    // var top_div1 = document.getElementById("place1");
+    // top_div1.onMouseOver=mouseAlert1;
+    //
+    // function mouseAlert1(){
+    //   alert("123");
+    //   // $("h4").css("background-color","yellow");
+    // }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/image_back_01.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+<!-- 博客文章样式 -->
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/image_back_01.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0" title="机器学习">机器学习</a>
+                        
+                    </div>
+                    <!-- 
+                    
+                     -->
+                    <h1>ML2--混淆矩阵及绘制</h1>
+                    
+                    <h2 class="subheading">机器学习第二课</h2>
+                    <span class="meta">Posted by yan on May 12, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+<!-- 首页的样式 -->
+
+
+
+<!-- 照片页的样式 -->
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<h1 id="混淆矩阵confusion-matrix">混淆矩阵（confusion matrix）</h1>
+<p>  混淆矩阵也称误差矩阵，是表示精度评价的一种标准格式，用n行n列的矩阵形式来表示。具体评价指标有总体精度、制图精度、用户精度等，这些精度指标从不同的侧面反映了图像分类的精度。在人工智能中，混淆矩阵（confusion matrix）是可视化工具，特别用于监督学习，在无监督学习一般叫做匹配矩阵。矩阵的每一行表示预测类中的实例，而每一列表示实际类中的实例（反之亦然）。 这个名字源于这样一个事实，即很容易看出系统是否混淆了两个类。</p>
+
+<p>  一句话解释版本：<br />
+  <strong>混淆矩阵就是分别统计分类模型归错类，归对类的观测值个数，然后把结果放在一个表里展示出来。这个表就是混淆矩阵。</strong></p>
+
+<p>  下图是混淆矩阵的一个例子</p>
+<div align="center"> <img src="/img/image_20200512001.png" /> </div>
+<p><br /></p>
+
+<p>  其中灰色部分是真实分类和预测分类结果相一致的，绿色部分是真实分类和预测分类不一致的，即分类错误的。</p>
+<h1 id="二分类用例">二分类用例</h1>
+<p>  以分类模型中最简单的二分类为例，对于这种问题，我们的模型最终需要判断样本的结果是0还是1，或者说是positive还是negative。</p>
+
+<p>  我们通过样本的采集，能够直接知道真实情况下，哪些数据结果是positive，哪些结果是negative。同时，我们通过用样本数据跑出分类型模型的结果，也可以知道模型认为这些数据哪些是positive，哪些是negative。</p>
+
+<p>  因此，我们就能得到这样四个基础指标，我称他们是一级指标（最底层的）：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>真实值是positive，模型认为是positive的数量（True Positive=TP）
+真实值是positive，模型认为是negative的数量（False Negative=FN）：这就是统计学上的第二类错误（Type II Error）
+真实值是negative，模型认为是positive的数量（False Positive=FP）：这就是统计学上的第一类错误（Type I Error）
+真实值是negative，模型认为是negative的数量（True Negative=TN）
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>  将这四个指标一起呈现在表格中，就能得到如下这样一个矩阵，我们称它为混淆矩阵（Confusion Matrix）:</p>
+<div align="center"> <img src="/img/image_20200512002.png" /> </div>
+<p><br /></p>
+
+<h1 id="混淆矩阵的指标">混淆矩阵的指标</h1>
+<p>  预测性分类模型，肯定是希望越准越好。那么，对应到混淆矩阵中，那肯定是希望<strong>TP与TN的数量大，而FP与FN的数量小</strong>。所以当我们得到了模型的混淆矩阵后，就需要去看有多少观测值在第二、四象限对应的位置，这里的数值越多越好；反之，在第一、三象限对应位置出现的观测值肯定是越少越好。</p>
+<h2 id="二级指标">二级指标</h2>
+<p>  但是，混淆矩阵里面统计的是个数，有时候面对大量的数据，光凭算个数，很难衡量模型的优劣。因此混淆矩阵在基本的统计结果上又延伸了如下4个指标，我称他们是二级指标（通过最底层指标加减乘除得到的）：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+</pre></td><td class="rouge-code"><pre>准确率（Accuracy）针对整个模型
+精确率（Precision）
+灵敏度（Sensitivity）:就是召回率（Recall）
+特异度（Specificity）
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>  用表格的方式将这四种指标的定义、计算、理解进行了汇总：</p>
+<div align="center"> <img src="/img/image_202005120013.png" /> </div>
+<p><br />
+  通过上面的四个二级指标，可以将混淆矩阵中数量的结果转化为0-1之间的比率。便于进行标准化的衡量。
+  在这四个指标的基础上在进行拓展，会产令另外一个三级指标。</p>
+
+<h2 id="三级指标">三级指标</h2>
+<p>  这个指标叫做F1 Score。他的计算公式是：</p>
+<div align="center"> <img src="/img/image_20200512004.png" /> </div>
+<p><br /></p>
+
+<p>  其中，P代表Precision，R代表Recall。</p>
+
+<p>  F1-Score指标综合了Precision与Recall的产出的结果。F1-Score的取值范围从0到1的，1代表模型的输出最好，0代表模型的输出结果最差。</p>
+<h1 id="混淆矩阵的实例">混淆矩阵的实例</h1>
+<p>  当分类问题是二分问题是，混淆矩阵可以用上面的方法计算。当分类的结果多于两种的时候，混淆矩阵同时适用。</p>
+
+<p>  以下面的混淆矩阵为例，我们的模型目的是为了预测样本是什么动物，这是我们的结果：</p>
+<div align="center"> <img src="/img/image_20200512005.png" /> </div>
+<p><br /></p>
+
+<p>  通过混淆矩阵，我们可以得到如下结论：</p>
+
+<h3 id="accuracy">Accuracy</h3>
+
+<p>  在总共66个动物中，我们一共预测对了10 + 15 + 20=45个样本，所以准确率（Accuracy）=45/66 = 68.2%。</p>
+
+<p>以猫为例，我们可以将上面的图合并为二分问题：</p>
+<div align="center"> <img src="/img/image_20200512006.png" /> </div>
+<p><br /></p>
+<h3 id="precision">Precision</h3>
+
+<p>  所以，以猫为例，模型的结果告诉我们，66只动物里有13只是猫，但是其实这13只猫只有10只预测对了。模型认为是猫的13只动物里，有1条狗，两只猪。所以，Precision（猫）= 10/13 = 76.9%</p>
+
+<h3 id="recall">Recall</h3>
+
+<p>  以猫为例，在总共18只真猫中，我们的模型认为里面只有10只是猫，剩下的3只是狗，5只都是猪。这5只八成是橘猫，能理解。所以，Recall（猫）= 10/18 = 55.6%</p>
+
+<h3 id="specificity">Specificity</h3>
+
+<p>  以猫为例，在总共48只不是猫的动物中，模型认为有45只不是猫。所以，Specificity（猫）= 45/48 = 93.8%。</p>
+
+<p>  虽然在45只动物里，模型依然认为错判了6只狗与4只猫，但是从猫的角度而言，模型的判断是没有错的。（这里是参见了Wikipedia，Confusion Matrix的解释,https://en.wikipedia.org/wiki/Confusion_matrix）</p>
+
+<h3 id="f1-score">F1-Score</h3>
+
+<p>  通过公式，可以计算出，对猫而言，F1-Score=（2 * 0.769 *  0.556）/（ 0.769 +  0.556） = 64.54%</p>
+
+<p>  同样，我们也可以分别计算猪与狗各自的二级指标与三级指标值。</p>
+<h1 id="方法调用">方法调用</h1>
+<p>  官方文档中给出的用法是</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>sklearn.metrics.confusion_matrix(y_true, y_pred, labels=None, sample_weight=None)
+y_true: 是样本真实分类结果，
+y_pred: 是样本预测分类结果
+labels：是所给出的类别，通过这个可对类别进行选择
+sample_weight : 样本权重
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>实现例子：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>from sklearn.metrics import confusion_matrix
+
+y_true=[2,1,0,1,2,0]
+y_pred=[2,0,0,1,2,1]
+
+C=confusion_matrix(y_true, y_pred)
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>运行结果:</p>
+<div align="center"> <img src="/img/image_20200512007.png" /> </div>
+<p><br /></p>
+
+<p>  这儿没有标注类别：下图是标注类别以后，更加好理解</p>
+<div align="center"> <img src="/img/image_20200512008.png" /> </div>
+<p><br /></p>
+
+<h1 id="绘制混淆矩阵">绘制混淆矩阵</h1>
+<h2 id="混淆矩阵的计算">混淆矩阵的计算</h2>
+<p>  混淆矩阵就是我们会计算最后分类错误的个数, 如计算将class1分为class2的个数，以此类推。</p>
+
+<p>  我们可以使用下面的方式来进行混淆矩阵的计算。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre># 绘制混淆矩阵
+def confusion_matrix(preds, labels, conf_matrix):
+    preds = torch.argmax(preds, 1)
+    for p, t in zip(preds, labels):
+        conf_matrix[p, t] += 1
+    return conf_matrix
+conf_matrix = torch.zeros(10, 10)
+for data, target in test_loader:
+    output = fullModel(data.to(device))
+    conf_matrix = confusion_matrix(output, target, conf_matrix)
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>  最后得到的conf_matrix就是混淆矩阵的值。</p>
+<div align="center"> <img src="/img/image_20200512009.png" /> </div>
+<p><br /></p>
+
+<h2 id="混淆矩阵的绘制plot-a-confusion-matrix">混淆矩阵的绘制(Plot a confusion matrix)</h2>
+<p>  有了上面的混淆矩阵中具体的值，下面就是进行可视化的步骤。可视化我们使用seaborn来进行完成。因为我这里conf_matrix的值是tensor, 所以需要先转换为Numpy.</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>import seaborn as sn
+df_cm = pd.DataFrame(conf_matrix.numpy(),
+                     index = [i for i in list(Attack2Index.keys())],
+                     columns = [i for i in list(Attack2Index.keys())])
+plt.figure(figsize = (10,7))
+sn.heatmap(df_cm, annot=True, cmap="BuPu")
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>  最终的混淆矩阵的图如下所示：</p>
+<div align="center"> <img src="/img/image_202005120010.png" /> </div>
+<p><br /></p>
+
+<h3 id="混淆矩阵的可视化进行美化">混淆矩阵的可视化(进行美化)</h3>
+<p>  我们还可以对混淆矩阵做更多的处理, 使得显示的时候能更加好看一些. 下面的绘制混淆矩阵的函数我是在下面的链接里看到的, 最终的效果很是不错。</p>
+
+<p>参考链接 : AE_RL_NSL_KDD</p>
+
+<p>这里简单贴一下代码，可以方便直接进行使用。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+</pre></td><td class="rouge-code"><pre>import itertools
+# 绘制混淆矩阵
+def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    Input
+    - cm : 计算出的混淆矩阵的值
+    - classes : 混淆矩阵中每一行每一列对应的列
+    - normalize : True:显示百分比, False:显示个数
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+    print(cm)
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] &gt; thresh else "black")
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>  测试数据如下所示：</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>cnf_matrix = np.array([[8707, 64, 731, 164, 45],
+                      [1821, 5530, 79, 0, 28],
+                      [266, 167, 1982, 4, 2],
+                      [691, 0, 107, 1930, 26],
+                      [30, 0, 111, 17, 42]])
+attack_types = ['Normal', 'DoS', 'Probe', 'R2L', 'U2R']
+</pre></td></tr></tbody></table></code></pre></div></div>
+<p>  我们分别测试normalize=True/False的效果。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>plot_confusion_matrix(cnf_matrix, classes=attack_types, normalize=True, title='Normalized confusion matrix')
+</pre></td></tr></tbody></table></code></pre></div></div>
+<div align="center"> <img src="/img/image_202005120011.png" /> </div>
+<p><br /></p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>plot_confusion_matrix(cnf_matrix, classes=attack_types, normalize=False, title='Normalized confusion matrix')
+</pre></td></tr></tbody></table></code></pre></div></div>
+<div align="center"> <img src="/img/image_202005120012.png" /> </div>
+<p><br /></p>
+
+
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2020/05/10/Scikit-Learn%E7%AE%80%E4%BB%8B/" data-toggle="tooltip" data-placement="top" title="ML1--Scikit-Learn简介">
+                        Previous<br>
+                        <span>ML1--Scikit-Learn简介</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/05/12/%E4%B8%BB%E6%88%90%E5%88%86%E5%88%86%E6%9E%90PCA/" data-toggle="tooltip" data-placement="top" title="ML3--主成分分析（PCA）">
+                        Next<br>
+                        <span>ML3--主成分分析（PCA）</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+                
+            </div>
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">目录</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">推荐标签</a></h5>
+    <div class="tags">
+        
+        
+        
+        </a>
+        
+        
+                <a data-sort="0015"
+                    href="/archive/?tag=%E5%AD%A6%E4%B9%A0"
+                    title="学习"
+                    rel="26">学习</a>
+        
+                <a data-sort="0035"
+                    href="/archive/?tag=%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0"
+                    title="机器学习"
+                    rel="6">机器学习</a>
+        
+                <a data-sort="0035"
+                    href="/archive/?tag=python"
+                    title="python"
+                    rel="6">python</a>
+        
+                <a data-sort="0036"
+                    href="/archive/?tag=%E7%BD%91%E7%BB%9C"
+                    title="网络"
+                    rel="5">网络</a>
+        
+                <a data-sort="0036"
+                    href="/archive/?tag=centos7"
+                    title="centos7"
+                    rel="5">centos7</a>
+        
+                <a data-sort="0036"
+                    href="/archive/?tag=docker"
+                    title="docker"
+                    rel="5">docker</a>
+        
+                <a data-sort="0037"
+                    href="/archive/?tag=linux"
+                    title="linux"
+                    rel="4">linux</a>
+        
+                <a data-sort="0039"
+                    href="/archive/?tag=%E8%B8%8F%E6%98%A5"
+                    title="踏春"
+                    rel="2">踏春
+    </div>
+</section>
+
+
+
+                <!-- Friends Blog -->
+                
+<hr>
+<h5>朋友</h5>
+<ul class="list-inline">
+  
+  <li><a href="http://www.cnblogs.com/yanwanglol/">博客园-yan</a></li>
+  
+  <li><a href="https://www.zhihu.com/people/wang520yan/activities">知乎-yan</a></li>
+  
+</ul>
+
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<!-- <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "yan";
+    var disqus_identifier = "/2020/05/12/混淆矩阵及绘制";
+    var disqus_url = "http://localhost:4000/2020/05/12/%E6%B7%B7%E6%B7%86%E7%9F%A9%E9%98%B5%E5%8F%8A%E7%BB%98%E5%88%B6/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script> -->
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    // async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+    //     anchors.options = {
+    //       visible: 'always',
+    //       placement: 'right',
+    //       icon: '#'
+    //     };
+    //     anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    // })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  
+  <li>
+    <a href="https://twitter.com/wang520yan">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/wang521yan">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="http://weibo.com/wang520yan">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.facebook.com/wang520yan">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/wang520yan">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  <li>
+    <a target="_blank" href="https://www.linkedin.com/in/wang520yan">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; Yan Blog 2020
+                    <br>
+                    Powered by <a href="https://wang520yan.github.io/">Yan Blog</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=wang520yan&repo=wang520yan.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '5cd3746f37e5658b23190f6f61f05fc0';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+
+        // interop with multilangual
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
